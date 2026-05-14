@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Laboratorio de Física - Grado 10</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #07111f;
+        --surface: rgba(10, 17, 35, 0.82);
+        --surface-strong: #0b1328;
+        --line: rgba(125, 211, 252, 0.16);
+        --text: #e5eefb;
+        --muted: #9bb0c9;
+        --primary: #38bdf8;
+        --secondary: #f97316;
+        --accent: #22c55e;
+        --shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        height: 100%;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Space Grotesk", sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 30%),
+          radial-gradient(circle at top right, rgba(249, 115, 22, 0.16), transparent 28%),
+          linear-gradient(180deg, #08101d 0%, #050b15 100%);
+      }
+
+      .mono {
+        font-family: "JetBrains Mono", monospace;
+      }
+
+      .glass {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(14px);
+      }
+
+      .tab-button {
+        position: relative;
+        border: 1px solid transparent;
+        color: var(--muted);
+        transition:
+          transform 180ms ease,
+          color 180ms ease,
+          border-color 180ms ease,
+          background-color 180ms ease;
+      }
+
+      .tab-button:hover {
+        transform: translateY(-1px);
+        color: var(--text);
+        border-color: rgba(125, 211, 252, 0.2);
+      }
+
+      .tab-button.is-active {
+        color: #ffffff;
+        background: linear-gradient(135deg, rgba(56, 189, 248, 0.18), rgba(34, 197, 94, 0.12));
+        border-color: rgba(56, 189, 248, 0.35);
+      }
+
+      .tab-panel {
+        display: none;
+        animation: fadeUp 220ms ease-out;
+      }
+
+      .tab-panel.is-active {
+        display: block;
+      }
+
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .metric-card {
+        background: linear-gradient(180deg, rgba(13, 21, 43, 0.92), rgba(8, 13, 27, 0.92));
+        border: 1px solid rgba(125, 211, 252, 0.12);
+      }
+
+      .code-block {
+        background: #08101d;
+        border: 1px solid rgba(125, 211, 252, 0.14);
+      }
+    </style>
+  </head>
+  <body>
+    <main class="mx-auto flex min-h-full w-full max-w-7xl flex-col px-4 py-5 sm:px-6 lg:px-8">
+      <header class="glass rounded-3xl px-5 py-6 sm:px-8 sm:py-7">
+        <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+          <div class="max-w-3xl space-y-4">
+            <div class="inline-flex items-center gap-2 rounded-full border border-sky-400/20 bg-sky-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-sky-200">
+              <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
+              Física gamificada para grado décimo - Colombia
+            </div>
+            <div>
+              <h1 class="text-3xl font-bold tracking-tight text-white sm:text-5xl">
+                Laboratorio de Física: misión de aprendizaje
+              </h1>
+              <p class="mt-3 max-w-2xl text-sm leading-6 text-slate-300 sm:text-base">
+                Una experiencia con 5 pestañas para trabajar movimiento, fuerzas, energía y resolución de problemas con enfoque escolar, narrativa de reto y retroalimentación por puntos.
+              </p>
+            </div>
+          </div>
+          <div class="grid grid-cols-3 gap-3 sm:w-auto sm:grid-cols-3">
+            <div class="metric-card rounded-2xl px-4 py-3">
+              <p class="text-xs uppercase tracking-[0.2em] text-sky-200/70">XP</p>
+              <p class="mono mt-1 text-2xl font-semibold text-white" id="xp-display">120</p>
+            </div>
+            <div class="metric-card rounded-2xl px-4 py-3">
+              <p class="text-xs uppercase tracking-[0.2em] text-amber-200/70">Nivel</p>
+              <p class="mono mt-1 text-2xl font-semibold text-white">10A</p>
+            </div>
+            <div class="metric-card rounded-2xl px-4 py-3">
+              <p class="text-xs uppercase tracking-[0.2em] text-emerald-200/70">Meta</p>
+              <p class="mono mt-1 text-2xl font-semibold text-white">5/5</p>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <section class="mt-5 glass rounded-3xl p-3 sm:p-4">
+        <nav class="grid gap-2 sm:grid-cols-2 lg:grid-cols-5" aria-label="Pestañas del laboratorio">
+          <button class="tab-button is-active rounded-2xl px-4 py-3 text-left text-sm font-semibold" data-tab="inicio">
+            01. Inicio
+          </button>
+          <button class="tab-button rounded-2xl px-4 py-3 text-left text-sm font-semibold" data-tab="conceptos">
+            02. Conceptos
+          </button>
+          <button class="tab-button rounded-2xl px-4 py-3 text-left text-sm font-semibold" data-tab="reto">
+            03. Reto
+          </button>
+          <button class="tab-button rounded-2xl px-4 py-3 text-left text-sm font-semibold" data-tab="evaluacion">
+            04. Evaluación
+          </button>
+          <button class="tab-button rounded-2xl px-4 py-3 text-left text-sm font-semibold" data-tab="indexhtml">
+            05. index.html
+          </button>
+        </nav>
+      </section>
+
+      <section class="mt-5 flex-1">
+        <article id="panel-inicio" class="tab-panel is-active glass rounded-3xl p-5 sm:p-7">
+          <div class="grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
+            <div class="space-y-5">
+              <div class="rounded-3xl border border-sky-400/15 bg-gradient-to-br from-sky-500/12 via-slate-900 to-slate-950 p-6">
+                <p class="text-xs uppercase tracking-[0.28em] text-sky-200/70">Misión 1</p>
+                <h2 class="mt-2 text-2xl font-bold text-white sm:text-3xl">Explorar el movimiento con contexto cercano</h2>
+                <p class="mt-3 max-w-2xl text-sm leading-6 text-slate-300 sm:text-base">
+                  El curso trabaja con ejemplos de transporte escolar, ciclas, motos y trayectos urbanos para identificar velocidad, distancia, tiempo y aceleración en situaciones reales.
+                </p>
+              </div>
+
+              <div class="grid gap-4 md:grid-cols-3">
+                <div class="metric-card rounded-2xl p-4">
+                  <p class="text-sm font-semibold text-sky-200">Objetivo 1</p>
+                  <p class="mt-2 text-sm text-slate-300">Reconocer variables del movimiento rectilíneo.</p>
+                </div>
+                <div class="metric-card rounded-2xl p-4">
+                  <p class="text-sm font-semibold text-amber-200">Objetivo 2</p>
+                  <p class="mt-2 text-sm text-slate-300">Aplicar fórmulas con unidades del SI.</p>
+                </div>
+                <div class="metric-card rounded-2xl p-4">
+                  <p class="text-sm font-semibold text-emerald-200">Objetivo 3</p>
+                  <p class="mt-2 text-sm text-slate-300">Argumentar respuestas con evidencias y gráficos.</p>
+                </div>
+              </div>
+            </div>
+
+            <aside class="space-y-4">
+              <div class="metric-card rounded-3xl p-5">
+                <h3 class="text-lg font-semibold text-white">Ruta del jugador</h3>
+                <ol class="mt-3 space-y-3 text-sm text-slate-300">
+                  <li class="flex gap-3"><span class="mono text-sky-300">1</span>Leer la situación problema.</li>
+                  <li class="flex gap-3"><span class="mono text-sky-300">2</span>Elegir datos relevantes.</li>
+                  <li class="flex gap-3"><span class="mono text-sky-300">3</span>Resolver con ecuaciones o tablas.</li>
+                  <li class="flex gap-3"><span class="mono text-sky-300">4</span>Verificar y ganar XP.</li>
+                </ol>
+              </div>
+              <div class="metric-card rounded-3xl p-5">
+                <h3 class="text-lg font-semibold text-white">Bonos</h3>
+                <div class="mt-3 space-y-2 text-sm text-slate-300">
+                  <p>+20 XP por participación oral.</p>
+                  <p>+30 XP por procedimiento correcto.</p>
+                  <p>+50 XP por explicación clara y ordenada.</p>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </article>
+
+        <article id="panel-conceptos" class="tab-panel glass rounded-3xl p-5 sm:p-7">
+          <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p class="text-xs uppercase tracking-[0.28em] text-sky-200/70">Tablero conceptual</p>
+              <h2 class="mt-2 text-2xl font-bold text-white">Ejes de física para décimo</h2>
+            </div>
+            <p class="text-sm text-slate-400">Movimiento, fuerzas, energía y medición.</p>
+          </div>
+
+          <div class="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            <div class="metric-card rounded-3xl p-5">
+              <p class="text-sm font-semibold text-sky-200">Movimiento</p>
+              <p class="mt-2 text-sm text-slate-300">Posición, desplazamiento, rapidez y velocidad.</p>
+            </div>
+            <div class="metric-card rounded-3xl p-5">
+              <p class="text-sm font-semibold text-amber-200">Fuerzas</p>
+              <p class="mt-2 text-sm text-slate-300">Peso, normal, fricción y diagrama de cuerpo libre.</p>
+            </div>
+            <div class="metric-card rounded-3xl p-5">
+              <p class="text-sm font-semibold text-emerald-200">Energía</p>
+              <p class="mt-2 text-sm text-slate-300">Cinética, potencial y conservación en sistemas simples.</p>
+            </div>
+            <div class="metric-card rounded-3xl p-5">
+              <p class="text-sm font-semibold text-rose-200">Medición</p>
+              <p class="mt-2 text-sm text-slate-300">Unidades SI, incertidumbre básica y lectura de datos.</p>
+            </div>
+          </div>
+
+          <div class="mt-5 grid gap-4 lg:grid-cols-[1fr_1fr]">
+            <div class="code-block rounded-3xl p-5">
+              <h3 class="text-sm font-semibold uppercase tracking-[0.22em] text-sky-200/70">Fórmulas clave</h3>
+              <div class="mt-4 grid gap-3 text-sm text-slate-200 sm:grid-cols-2">
+                <div class="rounded-2xl border border-white/5 bg-white/3 p-4"><span class="mono text-sky-300">v = d / t</span><p class="mt-2 text-slate-300">Velocidad media.</p></div>
+                <div class="rounded-2xl border border-white/5 bg-white/3 p-4"><span class="mono text-sky-300">a = Δv / Δt</span><p class="mt-2 text-slate-300">Aceleración.</p></div>
+                <div class="rounded-2xl border border-white/5 bg-white/3 p-4"><span class="mono text-sky-300">F = m · a</span><p class="mt-2 text-slate-300">Segunda ley de Newton.</p></div>
+                <div class="rounded-2xl border border-white/5 bg-white/3 p-4"><span class="mono text-sky-300">E = m · g · h</span><p class="mt-2 text-slate-300">Energía potencial.</p></div>
+              </div>
+            </div>
+
+            <div class="code-block rounded-3xl p-5">
+              <h3 class="text-sm font-semibold uppercase tracking-[0.22em] text-amber-200/70">Pregunta rápida</h3>
+              <p class="mt-3 text-sm text-slate-300">
+                Un estudiante recorre 120 m en 15 s en el patio del colegio. ¿Su rapidez media es mayor o menor que 10 m/s?
+              </p>
+              <div class="mt-4 flex flex-wrap gap-3">
+                <button class="answer-btn rounded-full border border-sky-400/30 bg-sky-400/10 px-4 py-2 text-sm font-semibold text-sky-100" data-answer="correct">Menor</button>
+                <button class="answer-btn rounded-full border border-slate-600 bg-slate-800 px-4 py-2 text-sm font-semibold text-slate-200" data-answer="wrong">Mayor</button>
+              </div>
+              <p class="mt-4 text-sm text-slate-400" id="concept-feedback">Elige una opción para comprobar tu respuesta.</p>
+            </div>
+          </div>
+        </article>
+
+        <article id="panel-reto" class="tab-panel glass rounded-3xl p-5 sm:p-7">
+          <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <p class="text-xs uppercase tracking-[0.28em] text-sky-200/70">Desafío</p>
+              <h2 class="mt-2 text-2xl font-bold text-white">Misión de resolución en equipo</h2>
+            </div>
+            <div class="inline-flex items-center gap-2 rounded-2xl border border-emerald-400/20 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-100">
+              <span class="mono text-lg font-semibold" id="challenge-xp">40</span>
+              XP por completar
+            </div>
+          </div>
+
+          <div class="mt-5 grid gap-4 lg:grid-cols-[1fr_1fr]">
+            <div class="metric-card rounded-3xl p-5">
+              <h3 class="text-lg font-semibold text-white">Situación problema</h3>
+              <p class="mt-3 text-sm leading-6 text-slate-300">
+                Una bicicleta escolar recorre 180 m en 12 s. Luego acelera y cambia su velocidad de 6 m/s a 12 m/s en 3 s. El equipo debe identificar rapidez y aceleración, y justificar cada paso.
+              </p>
+              <div class="mt-4 grid gap-3 sm:grid-cols-2">
+                <div class="rounded-2xl border border-white/5 bg-white/4 p-4">
+                  <p class="mono text-xl font-semibold text-sky-200">180 / 12</p>
+                  <p class="mt-1 text-sm text-slate-300">Rapidez inicial</p>
+                </div>
+                <div class="rounded-2xl border border-white/5 bg-white/4 p-4">
+                  <p class="mono text-xl font-semibold text-amber-200">(12 - 6) / 3</p>
+                  <p class="mt-1 text-sm text-slate-300">Aceleración</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="metric-card rounded-3xl p-5">
+              <h3 class="text-lg font-semibold text-white">Progreso del equipo</h3>
+              <div class="mt-4 space-y-3 text-sm text-slate-300">
+                <label class="flex items-center gap-3 rounded-2xl border border-white/5 bg-white/4 px-4 py-3"><input type="checkbox" class="h-4 w-4 accent-sky-400" data-xp="10" /> Identificó datos relevantes</label>
+                <label class="flex items-center gap-3 rounded-2xl border border-white/5 bg-white/4 px-4 py-3"><input type="checkbox" class="h-4 w-4 accent-sky-400" data-xp="15" /> Escribió fórmulas correctas</label>
+                <label class="flex items-center gap-3 rounded-2xl border border-white/5 bg-white/4 px-4 py-3"><input type="checkbox" class="h-4 w-4 accent-sky-400" data-xp="15" /> Explicó la unidad de medida</label>
+              </div>
+              <button id="claim-xp" class="mt-4 rounded-2xl bg-gradient-to-r from-sky-500 to-emerald-500 px-4 py-3 text-sm font-semibold text-white transition hover:brightness-110">
+                Reclamar XP ganado
+              </button>
+            </div>
+          </div>
+        </article>
+
+        <article id="panel-evaluacion" class="tab-panel glass rounded-3xl p-5 sm:p-7">
+          <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p class="text-xs uppercase tracking-[0.28em] text-sky-200/70">Evaluación</p>
+              <h2 class="mt-2 text-2xl font-bold text-white">Rúbrica de gamificación</h2>
+            </div>
+            <p class="text-sm text-slate-400">Pensada para clase, trabajo grupal y retroalimentación rápida.</p>
+          </div>
+
+          <div class="mt-5 overflow-hidden rounded-3xl border border-white/8">
+            <table class="w-full border-collapse text-left text-sm">
+              <thead class="bg-white/5 text-slate-200">
+                <tr>
+                  <th class="px-4 py-3">Criterio</th>
+                  <th class="px-4 py-3">Nivel alto</th>
+                  <th class="px-4 py-3">Puntos</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-white/5 bg-slate-950/50 text-slate-300">
+                <tr>
+                  <td class="px-4 py-3 font-medium text-white">Análisis del problema</td>
+                  <td class="px-4 py-3">Identifica datos y pregunta física.</td>
+                  <td class="px-4 py-3 mono">20</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-medium text-white">Procedimiento</td>
+                  <td class="px-4 py-3">Usa fórmulas y unidades correctamente.</td>
+                  <td class="px-4 py-3 mono">30</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-medium text-white">Comunicación</td>
+                  <td class="px-4 py-3">Explica con claridad y participa en equipo.</td>
+                  <td class="px-4 py-3 mono">20</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-medium text-white">Producto final</td>
+                  <td class="px-4 py-3">Entrega completa y ordenada.</td>
+                  <td class="px-4 py-3 mono">30</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="mt-5 grid gap-4 md:grid-cols-3">
+            <div class="metric-card rounded-3xl p-5">
+              <p class="text-sm font-semibold text-sky-200">Insignia Explorador</p>
+              <p class="mt-2 text-sm text-slate-300">Para quien detecta datos y variables.</p>
+            </div>
+            <div class="metric-card rounded-3xl p-5">
+              <p class="text-sm font-semibold text-amber-200">Insignia Calculista</p>
+              <p class="mt-2 text-sm text-slate-300">Para quien resuelve con precisión.</p>
+            </div>
+            <div class="metric-card rounded-3xl p-5">
+              <p class="text-sm font-semibold text-emerald-200">Insignia Vocero</p>
+              <p class="mt-2 text-sm text-slate-300">Para quien expone y argumenta bien.</p>
+            </div>
+          </div>
+        </article>
+
+        <article id="panel-indexhtml" class="tab-panel glass rounded-3xl p-5 sm:p-7">
+          <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p class="text-xs uppercase tracking-[0.28em] text-sky-200/70">Archivo principal</p>
+              <h2 class="mt-2 text-2xl font-bold text-white">index.html</h2>
+            </div>
+            <button id="copy-snippet" class="rounded-2xl border border-sky-400/25 bg-sky-400/10 px-4 py-3 text-sm font-semibold text-sky-100 transition hover:bg-sky-400/15">
+              Copiar estructura
+            </button>
+          </div>
+
+          <div class="mt-5 grid gap-4 lg:grid-cols-[1fr_1.1fr]">
+            <div class="metric-card rounded-3xl p-5">
+              <h3 class="text-lg font-semibold text-white">Qué contiene esta pestaña</h3>
+              <ul class="mt-3 space-y-2 text-sm leading-6 text-slate-300">
+                <li>La estructura base del proyecto.</li>
+                <li>La navegación por las 5 pestañas.</li>
+                <li>La lógica visual y gamificada en un solo archivo.</li>
+                <li>Un espacio para mostrar el código si el docente quiere enseñarlo.</li>
+              </ul>
+            </div>
+
+            <div class="code-block overflow-hidden rounded-3xl">
+              <div class="flex items-center justify-between border-b border-white/5 px-4 py-3 text-xs uppercase tracking-[0.22em] text-slate-400">
+                <span>Vista rápida de index.html</span>
+                <span class="text-emerald-300">Archivo activo</span>
+              </div>
+              <pre class="overflow-auto p-4 text-xs leading-6 text-slate-200"><code id="snippet">&lt;main&gt;
+  &lt;nav&gt;5 pestañas&lt;/nav&gt;
+  &lt;section&gt;Inicio&lt;/section&gt;
+  &lt;section&gt;Conceptos&lt;/section&gt;
+  &lt;section&gt;Reto&lt;/section&gt;
+  &lt;section&gt;Evaluación&lt;/section&gt;
+  &lt;section&gt;index.html&lt;/section&gt;
+&lt;/main&gt;</code></pre>
+            </div>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <script>
+      const tabs = Array.from(document.querySelectorAll(".tab-button"));
+      const panels = {
+        inicio: document.getElementById("panel-inicio"),
+        conceptos: document.getElementById("panel-conceptos"),
+        reto: document.getElementById("panel-reto"),
+        evaluacion: document.getElementById("panel-evaluacion"),
+        indexhtml: document.getElementById("panel-indexhtml"),
+      };
+
+      function showTab(name) {
+        tabs.forEach((button) => {
+          const active = button.dataset.tab === name;
+          button.classList.toggle("is-active", active);
+          button.setAttribute("aria-pressed", String(active));
+        });
+
+        Object.entries(panels).forEach(([key, panel]) => {
+          panel.classList.toggle("is-active", key === name);
+        });
+      }
+
+      tabs.forEach((button) => {
+        button.addEventListener("click", () => showTab(button.dataset.tab));
+      });
+
+      const answerButtons = Array.from(document.querySelectorAll(".answer-btn"));
+      const feedback = document.getElementById("concept-feedback");
+      answerButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const correct = button.dataset.answer === "correct";
+          feedback.textContent = correct
+            ? "Correcto: 120 / 15 = 8 m/s, así que es menor que 10 m/s."
+            : "Todavía no: 120 / 15 da 8 m/s, no mayor que 10 m/s.";
+          feedback.className = correct ? "mt-4 text-sm text-emerald-300" : "mt-4 text-sm text-rose-300";
+        });
+      });
+
+      const xpDisplay = document.getElementById("xp-display");
+      const challengeXp = document.getElementById("challenge-xp");
+      const claimButton = document.getElementById("claim-xp");
+      const checkboxes = Array.from(document.querySelectorAll('input[type="checkbox"][data-xp]'));
+      let xp = 120;
+
+      claimButton.addEventListener("click", () => {
+        const gained = checkboxes.reduce((sum, input) => sum + (input.checked ? Number(input.dataset.xp) : 0), 0);
+        xp += gained;
+        xpDisplay.textContent = String(xp);
+        challengeXp.textContent = String(gained);
+        claimButton.textContent = gained > 0 ? `XP reclamados: +${gained}` : "No hay XP para reclamar";
+      });
+
+      const copyButton = document.getElementById("copy-snippet");
+      const snippet = document.getElementById("snippet").innerText;
+      copyButton.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(snippet);
+          copyButton.textContent = "Estructura copiada";
+        } catch {
+          copyButton.textContent = "No se pudo copiar";
+        }
+      });
+    </script>
+  </body>
+</html>
