@@ -3,27 +3,25 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Laboratorio de Física - Grado 10</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Physics Challenger: La Academia del Heroe</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800&family=Rajdhani:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <style>
       :root {
-        color-scheme: dark;
-        --bg: #07111f;
-        --surface: rgba(10, 17, 35, 0.82);
-        --surface-strong: #0b1328;
-        --line: rgba(125, 211, 252, 0.16);
-        --text: #e5eefb;
-        --muted: #9bb0c9;
-        --primary: #38bdf8;
-        --secondary: #f97316;
-        --accent: #22c55e;
-        --shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+        --dark-blue: #070b1a;
+        --deep-blue: #0f1d3a;
+        --purple: #3f206f;
+        --gold: #f4c86c;
+        --neon: #31e7ff;
+        --ink: #04050a;
+        --text: #ecf3ff;
+        --muted: #95a7c3;
+        --glass: rgba(16, 26, 56, 0.5);
+        --line: rgba(49, 231, 255, 0.24);
       }
 
       * {
@@ -32,449 +30,837 @@
 
       html,
       body {
+        margin: 0;
         height: 100%;
       }
 
       body {
-        margin: 0;
-        font-family: "Space Grotesk", sans-serif;
+        font-family: "Rajdhani", sans-serif;
         color: var(--text);
         background:
-          radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 30%),
-          radial-gradient(circle at top right, rgba(249, 115, 22, 0.16), transparent 28%),
-          linear-gradient(180deg, #08101d 0%, #050b15 100%);
+          radial-gradient(circle at 10% 10%, rgba(49, 231, 255, 0.14), transparent 25%),
+          radial-gradient(circle at 90% 5%, rgba(244, 200, 108, 0.18), transparent 20%),
+          radial-gradient(circle at 50% 85%, rgba(128, 77, 255, 0.22), transparent 40%),
+          linear-gradient(165deg, #03050e 0%, #080e1f 45%, #090812 100%);
+        overflow: hidden;
       }
 
-      .mono {
-        font-family: "JetBrains Mono", monospace;
+      .title-font {
+        font-family: "Cinzel", serif;
+        letter-spacing: 0.06em;
+      }
+
+      .app {
+        position: relative;
+        z-index: 2;
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        height: 100%;
       }
 
       .glass {
-        background: var(--surface);
+        background: var(--glass);
         border: 1px solid var(--line);
-        box-shadow: var(--shadow);
         backdrop-filter: blur(14px);
+        box-shadow: 0 16px 60px rgba(0, 0, 0, 0.4);
       }
 
-      .tab-button {
-        position: relative;
-        border: 1px solid transparent;
+      .sidebar {
+        padding: 18px;
+        border-right: 1px solid rgba(49, 231, 255, 0.2);
+        background: linear-gradient(180deg, rgba(6, 10, 25, 0.85), rgba(8, 15, 35, 0.6));
+      }
+
+      .brand {
+        border-radius: 18px;
+        padding: 14px;
+        margin-bottom: 12px;
+      }
+
+      .brand h1 {
+        margin: 0;
+        font-size: 1.1rem;
+      }
+
+      .rank-track {
+        margin-top: 10px;
+        font-size: 0.86rem;
         color: var(--muted);
-        transition:
-          transform 180ms ease,
-          color 180ms ease,
-          border-color 180ms ease,
-          background-color 180ms ease;
+        line-height: 1.35;
       }
 
-      .tab-button:hover {
-        transform: translateY(-1px);
-        color: var(--text);
-        border-color: rgba(125, 211, 252, 0.2);
+      .nav-list {
+        display: grid;
+        gap: 8px;
+        margin-top: 14px;
       }
 
-      .tab-button.is-active {
+      .nav-btn {
+        width: 100%;
+        border: 1px solid transparent;
+        border-radius: 14px;
+        padding: 12px;
+        text-align: left;
+        color: #c8d7ef;
+        background: rgba(13, 21, 46, 0.42);
+        transition: all 0.2s ease;
+        cursor: pointer;
+      }
+
+      .nav-btn:hover {
+        transform: translateX(2px);
+        border-color: rgba(49, 231, 255, 0.34);
+      }
+
+      .nav-btn.active {
+        border-color: rgba(244, 200, 108, 0.65);
+        background: linear-gradient(120deg, rgba(49, 231, 255, 0.18), rgba(128, 77, 255, 0.22));
         color: #ffffff;
-        background: linear-gradient(135deg, rgba(56, 189, 248, 0.18), rgba(34, 197, 94, 0.12));
-        border-color: rgba(56, 189, 248, 0.35);
       }
 
-      .tab-panel {
+      .main {
+        padding: 18px;
+        overflow: auto;
+      }
+
+      .header {
+        border-radius: 22px;
+        padding: 16px;
+      }
+
+      .header-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .xp-wrap {
+        width: min(360px, 90vw);
+      }
+
+      .xp-bar {
+        width: 100%;
+        height: 14px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.12);
+        overflow: hidden;
+      }
+
+      .xp-fill {
+        width: 24%;
+        height: 100%;
+        background: linear-gradient(90deg, var(--gold), #ffea9f, var(--neon));
+        transition: width 0.4s ease;
+      }
+
+      .page {
         display: none;
-        animation: fadeUp 220ms ease-out;
+        margin-top: 14px;
+        animation: showPanel 0.24s ease;
       }
 
-      .tab-panel.is-active {
+      .page.active {
         display: block;
       }
 
-      @keyframes fadeUp {
+      .grid {
+        display: grid;
+        gap: 12px;
+      }
+
+      .card {
+        border-radius: 18px;
+        padding: 14px;
+      }
+
+      .mission {
+        background: linear-gradient(135deg, rgba(15, 28, 62, 0.58), rgba(32, 11, 67, 0.48));
+        border: 1px solid rgba(49, 231, 255, 0.26);
+      }
+
+      .badge {
+        display: inline-block;
+        border: 1px solid rgba(244, 200, 108, 0.72);
+        color: var(--gold);
+        border-radius: 999px;
+        padding: 4px 10px;
+        font-size: 0.9rem;
+      }
+
+      .story {
+        line-height: 1.5;
+        color: #d9e5f6;
+      }
+
+      .mission-btn {
+        border: 0;
+        border-radius: 12px;
+        padding: 10px 12px;
+        font-weight: 700;
+        color: #051126;
+        background: linear-gradient(90deg, #9bf1ff, #ffe6a5);
+        cursor: pointer;
+        transition: transform 0.2s ease;
+      }
+
+      .mission-btn:hover {
+        transform: translateY(-2px);
+      }
+
+      .accordion {
+        margin-top: 8px;
+      }
+
+      .accordion button {
+        width: 100%;
+        border: 1px solid rgba(49, 231, 255, 0.24);
+        background: rgba(8, 17, 38, 0.52);
+        color: #deecff;
+        border-radius: 12px;
+        padding: 11px;
+        text-align: left;
+        cursor: pointer;
+      }
+
+      .accordion-content {
+        display: none;
+        margin-top: 6px;
+        border-radius: 12px;
+        padding: 10px;
+        background: rgba(9, 15, 31, 0.78);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .accordion.open .accordion-content {
+        display: block;
+      }
+
+      .cards-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 10px;
+      }
+
+      .mini {
+        border-radius: 14px;
+        padding: 10px;
+        background: rgba(10, 16, 35, 0.74);
+        border: 1px solid rgba(49, 231, 255, 0.18);
+        transition: transform 0.2s ease;
+      }
+
+      .mini:hover {
+        transform: translateY(-3px);
+      }
+
+      .scroll {
+        max-height: 260px;
+        overflow: auto;
+      }
+
+      .parchment {
+        background: linear-gradient(180deg, rgba(255, 236, 190, 0.18), rgba(255, 216, 136, 0.1));
+        border: 1px solid rgba(244, 200, 108, 0.5);
+        border-radius: 14px;
+        padding: 12px;
+        animation: pulseScroll 2.8s ease-in-out infinite;
+      }
+
+      .soft-zone {
+        background: linear-gradient(180deg, rgba(89, 140, 220, 0.2), rgba(122, 98, 188, 0.12));
+        border: 1px solid rgba(160, 201, 255, 0.2);
+      }
+
+      .table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .table th,
+      .table td {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+        padding: 9px;
+        text-align: left;
+      }
+
+      .podium {
+        display: grid;
+        grid-template-columns: 1fr 1.1fr 1fr;
+        gap: 8px;
+        align-items: end;
+      }
+
+      .podium-step {
+        border-radius: 12px 12px 0 0;
+        text-align: center;
+        padding: 10px;
+        color: #1a1400;
+        font-weight: 700;
+        animation: rise 1.2s ease;
+      }
+
+      .modal {
+        position: fixed;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: rgba(1, 4, 11, 0.75);
+        z-index: 99;
+      }
+
+      .modal.open {
+        display: flex;
+      }
+
+      .modal-box {
+        width: min(560px, 90vw);
+        border-radius: 18px;
+        padding: 16px;
+      }
+
+      .particles {
+        position: fixed;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+      }
+
+      .hero-illu {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        font-size: 2rem;
+      }
+
+      @keyframes showPanel {
         from {
           opacity: 0;
           transform: translateY(10px);
         }
-
         to {
           opacity: 1;
           transform: translateY(0);
         }
       }
 
-      .metric-card {
-        background: linear-gradient(180deg, rgba(13, 21, 43, 0.92), rgba(8, 13, 27, 0.92));
-        border: 1px solid rgba(125, 211, 252, 0.12);
+      @keyframes pulseScroll {
+        0%,
+        100% {
+          box-shadow: 0 0 0 rgba(244, 200, 108, 0);
+        }
+        50% {
+          box-shadow: 0 0 24px rgba(244, 200, 108, 0.18);
+        }
       }
 
-      .code-block {
-        background: #08101d;
-        border: 1px solid rgba(125, 211, 252, 0.14);
+      @keyframes rise {
+        from {
+          transform: translateY(10px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      @media (max-width: 980px) {
+        .app {
+          grid-template-columns: 1fr;
+        }
+        .sidebar {
+          border-right: 0;
+          border-bottom: 1px solid rgba(49, 231, 255, 0.2);
+        }
+        .nav-list {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .header-top {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+
+      @media (max-width: 620px) {
+        .nav-list {
+          grid-template-columns: 1fr;
+        }
+        .podium {
+          grid-template-columns: 1fr;
+        }
       }
     </style>
   </head>
   <body>
-    <main class="mx-auto flex min-h-full w-full max-w-7xl flex-col px-4 py-5 sm:px-6 lg:px-8">
-      <header class="glass rounded-3xl px-5 py-6 sm:px-8 sm:py-7">
-        <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-          <div class="max-w-3xl space-y-4">
-            <div class="inline-flex items-center gap-2 rounded-full border border-sky-400/20 bg-sky-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-sky-200">
-              <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
-              Física gamificada para grado décimo - Colombia
-            </div>
-            <div>
-              <h1 class="text-3xl font-bold tracking-tight text-white sm:text-5xl">
-                Laboratorio de Física: misión de aprendizaje
-              </h1>
-              <p class="mt-3 max-w-2xl text-sm leading-6 text-slate-300 sm:text-base">
-                Una experiencia con 5 pestañas para trabajar movimiento, fuerzas, energía y resolución de problemas con enfoque escolar, narrativa de reto y retroalimentación por puntos.
-              </p>
-            </div>
+    <canvas class="particles" id="particles"></canvas>
+    <div class="app">
+      <aside class="sidebar">
+        <section class="brand glass">
+          <h1 class="title-font">PHYSICS CHALLENGER</h1>
+          <p style="margin: 4px 0 0; color: var(--muted)">La Academia del Heroe</p>
+          <div class="rank-track">
+            Aprendiz -> Explorador -> Cientifico -> Experto -> Maestro Heroe
           </div>
-          <div class="grid grid-cols-3 gap-3 sm:w-auto sm:grid-cols-3">
-            <div class="metric-card rounded-2xl px-4 py-3">
-              <p class="text-xs uppercase tracking-[0.2em] text-sky-200/70">XP</p>
-              <p class="mono mt-1 text-2xl font-semibold text-white" id="xp-display">120</p>
-            </div>
-            <div class="metric-card rounded-2xl px-4 py-3">
-              <p class="text-xs uppercase tracking-[0.2em] text-amber-200/70">Nivel</p>
-              <p class="mono mt-1 text-2xl font-semibold text-white">10A</p>
-            </div>
-            <div class="metric-card rounded-2xl px-4 py-3">
-              <p class="text-xs uppercase tracking-[0.2em] text-emerald-200/70">Meta</p>
-              <p class="mono mt-1 text-2xl font-semibold text-white">5/5</p>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <section class="mt-5 glass rounded-3xl p-3 sm:p-4">
-        <nav class="grid gap-2 sm:grid-cols-2 lg:grid-cols-5" aria-label="Pestañas del laboratorio">
-          <button class="tab-button is-active rounded-2xl px-4 py-3 text-left text-sm font-semibold" data-tab="inicio">
-            01. Inicio
-          </button>
-          <button class="tab-button rounded-2xl px-4 py-3 text-left text-sm font-semibold" data-tab="conceptos">
-            02. Conceptos
-          </button>
-          <button class="tab-button rounded-2xl px-4 py-3 text-left text-sm font-semibold" data-tab="reto">
-            03. Reto
-          </button>
-          <button class="tab-button rounded-2xl px-4 py-3 text-left text-sm font-semibold" data-tab="evaluacion">
-            04. Evaluación
-          </button>
-          <button class="tab-button rounded-2xl px-4 py-3 text-left text-sm font-semibold" data-tab="indexhtml">
-            05. index.html
-          </button>
+        </section>
+        <nav class="nav-list" aria-label="Actividades">
+          <button class="nav-btn active" data-target="act0">⚔️ Actividad 0</button>
+          <button class="nav-btn" data-target="act1">🌲 Actividad 1</button>
+          <button class="nav-btn" data-target="act2">🏁 Actividad 2</button>
+          <button class="nav-btn" data-target="act3">🛠️ Actividad 3</button>
+          <button class="nav-btn" data-target="act4">🌱 Actividad 4</button>
+          <button class="nav-btn" data-target="act5">🏆 Actividad 5</button>
         </nav>
-      </section>
+      </aside>
 
-      <section class="mt-5 flex-1">
-        <article id="panel-inicio" class="tab-panel is-active glass rounded-3xl p-5 sm:p-7">
-          <div class="grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
-            <div class="space-y-5">
-              <div class="rounded-3xl border border-sky-400/15 bg-gradient-to-br from-sky-500/12 via-slate-900 to-slate-950 p-6">
-                <p class="text-xs uppercase tracking-[0.28em] text-sky-200/70">Misión 1</p>
-                <h2 class="mt-2 text-2xl font-bold text-white sm:text-3xl">Explorar el movimiento con contexto cercano</h2>
-                <p class="mt-3 max-w-2xl text-sm leading-6 text-slate-300 sm:text-base">
-                  El curso trabaja con ejemplos de transporte escolar, ciclas, motos y trayectos urbanos para identificar velocidad, distancia, tiempo y aceleración en situaciones reales.
+      <main class="main">
+        <header class="header glass">
+          <div class="header-top">
+            <div>
+              <h2 class="title-font" style="margin: 0; font-size: 1.8rem">PHYSICS CHALLENGER</h2>
+              <p style="margin: 2px 0 0; color: #c7d6f3">La Academia del Heroe - Fisica Mecanica Grado Decimo</p>
+            </div>
+            <div class="xp-wrap">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 4px">
+                <strong>XP</strong>
+                <strong id="xp-text">120 XP</strong>
+              </div>
+              <div class="xp-bar"><div class="xp-fill" id="xp-fill"></div></div>
+              <div style="margin-top: 6px; color: var(--muted)">
+                Rango actual: <span id="rank-name" style="color: var(--gold)">Aprendiz</span>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <section id="act0" class="page active">
+          <div class="grid" style="grid-template-columns: 1.2fr 0.8fr">
+            <article class="card glass mission">
+              <span class="badge">ACTIVIDAD 0 - El Gran Comienzo</span>
+              <h3 class="title-font" style="margin: 10px 0">Bienvenida a la Academia de Heroes Cientificos</h3>
+              <p class="story">
+                El docente asume el rol de El Gran Maestre y abre las puertas de la academia. Aqui los estudiantes ascienden
+                por rangos dominando misiones de fisica mecanica y trabajo cooperativo.
+              </p>
+              <div class="hero-illu" aria-hidden="true">🧪 ⚡ 🛡️ 📘</div>
+              <div class="cards-row" style="margin-top: 10px">
+                <div class="mini">🧭 Escuadrones</div>
+                <div class="mini">📚 Libro de Heroes</div>
+                <div class="mini">🥇 Ranking</div>
+                <div class="mini">🎖️ Insignias</div>
+              </div>
+              <div class="parchment" style="margin-top: 12px">
+                <strong>Juramento del Explorador</strong>
+                <p style="margin: 6px 0 0">
+                  Juro observar, medir y argumentar con honestidad cientifica. Aprendere del error y apoyare a mi escuadron.
                 </p>
               </div>
-
-              <div class="grid gap-4 md:grid-cols-3">
-                <div class="metric-card rounded-2xl p-4">
-                  <p class="text-sm font-semibold text-sky-200">Objetivo 1</p>
-                  <p class="mt-2 text-sm text-slate-300">Reconocer variables del movimiento rectilíneo.</p>
-                </div>
-                <div class="metric-card rounded-2xl p-4">
-                  <p class="text-sm font-semibold text-amber-200">Objetivo 2</p>
-                  <p class="mt-2 text-sm text-slate-300">Aplicar fórmulas con unidades del SI.</p>
-                </div>
-                <div class="metric-card rounded-2xl p-4">
-                  <p class="text-sm font-semibold text-emerald-200">Objetivo 3</p>
-                  <p class="mt-2 text-sm text-slate-300">Argumentar respuestas con evidencias y gráficos.</p>
-                </div>
+              <button class="mission-btn" data-modal-open="modalStart" style="margin-top: 12px">Iniciar aventura</button>
+            </article>
+            <aside class="card glass">
+              <h4 class="title-font" style="margin: 0 0 8px">Panel de diagnostico motivacional</h4>
+              <div class="accordion">
+                <button class="accordion-toggle">¿Como llego hoy a la mision?</button>
+                <div class="accordion-content">Selecciona tu energia: Alta, Media o Enfocado en mejorar.</div>
               </div>
-            </div>
-
-            <aside class="space-y-4">
-              <div class="metric-card rounded-3xl p-5">
-                <h3 class="text-lg font-semibold text-white">Ruta del jugador</h3>
-                <ol class="mt-3 space-y-3 text-sm text-slate-300">
-                  <li class="flex gap-3"><span class="mono text-sky-300">1</span>Leer la situación problema.</li>
-                  <li class="flex gap-3"><span class="mono text-sky-300">2</span>Elegir datos relevantes.</li>
-                  <li class="flex gap-3"><span class="mono text-sky-300">3</span>Resolver con ecuaciones o tablas.</li>
-                  <li class="flex gap-3"><span class="mono text-sky-300">4</span>Verificar y ganar XP.</li>
-                </ol>
+              <div class="accordion">
+                <button class="accordion-toggle">Fortaleza personal</button>
+                <div class="accordion-content">Analisis de problemas, trabajo en equipo, creatividad experimental.</div>
               </div>
-              <div class="metric-card rounded-3xl p-5">
-                <h3 class="text-lg font-semibold text-white">Bonos</h3>
-                <div class="mt-3 space-y-2 text-sm text-slate-300">
-                  <p>+20 XP por participación oral.</p>
-                  <p>+30 XP por procedimiento correcto.</p>
-                  <p>+50 XP por explicación clara y ordenada.</p>
-                </div>
+              <div class="accordion">
+                <button class="accordion-toggle">Meta del dia</button>
+                <div class="accordion-content">Ganar la insignia inicial con participacion y razonamiento fisico.</div>
               </div>
             </aside>
           </div>
-        </article>
+        </section>
 
-        <article id="panel-conceptos" class="tab-panel glass rounded-3xl p-5 sm:p-7">
-          <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p class="text-xs uppercase tracking-[0.28em] text-sky-200/70">Tablero conceptual</p>
-              <h2 class="mt-2 text-2xl font-bold text-white">Ejes de física para décimo</h2>
+        <section id="act1" class="page">
+          <article class="card glass mission">
+            <span class="badge">ACTIVIDAD 1 - El Movimiento del Heroe</span>
+            <h3 class="title-font" style="margin: 10px 0">Mision de Cinematica en el Bosque Vectorial</h3>
+            <p class="story">
+              El heroe cruza un bosque de trayectorias. Cada decision exige calcular posicion, desplazamiento y velocidad media para salir de la niebla mecanica.
+            </p>
+            <div class="cards-row">
+              <div class="mini"><strong>Nivel 1</strong><br />Posicion y referencia espacial</div>
+              <div class="mini"><strong>Nivel 2</strong><br />Desplazamiento y direccion</div>
+              <div class="mini"><strong>Nivel 3</strong><br />Velocidad media y analisis</div>
             </div>
-            <p class="text-sm text-slate-400">Movimiento, fuerzas, energía y medición.</p>
-          </div>
-
-          <div class="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            <div class="metric-card rounded-3xl p-5">
-              <p class="text-sm font-semibold text-sky-200">Movimiento</p>
-              <p class="mt-2 text-sm text-slate-300">Posición, desplazamiento, rapidez y velocidad.</p>
-            </div>
-            <div class="metric-card rounded-3xl p-5">
-              <p class="text-sm font-semibold text-amber-200">Fuerzas</p>
-              <p class="mt-2 text-sm text-slate-300">Peso, normal, fricción y diagrama de cuerpo libre.</p>
-            </div>
-            <div class="metric-card rounded-3xl p-5">
-              <p class="text-sm font-semibold text-emerald-200">Energía</p>
-              <p class="mt-2 text-sm text-slate-300">Cinética, potencial y conservación en sistemas simples.</p>
-            </div>
-            <div class="metric-card rounded-3xl p-5">
-              <p class="text-sm font-semibold text-rose-200">Medición</p>
-              <p class="mt-2 text-sm text-slate-300">Unidades SI, incertidumbre básica y lectura de datos.</p>
-            </div>
-          </div>
-
-          <div class="mt-5 grid gap-4 lg:grid-cols-[1fr_1fr]">
-            <div class="code-block rounded-3xl p-5">
-              <h3 class="text-sm font-semibold uppercase tracking-[0.22em] text-sky-200/70">Fórmulas clave</h3>
-              <div class="mt-4 grid gap-3 text-sm text-slate-200 sm:grid-cols-2">
-                <div class="rounded-2xl border border-white/5 bg-white/3 p-4"><span class="mono text-sky-300">v = d / t</span><p class="mt-2 text-slate-300">Velocidad media.</p></div>
-                <div class="rounded-2xl border border-white/5 bg-white/3 p-4"><span class="mono text-sky-300">a = Δv / Δt</span><p class="mt-2 text-slate-300">Aceleración.</p></div>
-                <div class="rounded-2xl border border-white/5 bg-white/3 p-4"><span class="mono text-sky-300">F = m · a</span><p class="mt-2 text-slate-300">Segunda ley de Newton.</p></div>
-                <div class="rounded-2xl border border-white/5 bg-white/3 p-4"><span class="mono text-sky-300">E = m · g · h</span><p class="mt-2 text-slate-300">Energía potencial.</p></div>
+            <div class="grid" style="grid-template-columns: 1fr 1fr; margin-top: 10px">
+              <div class="card" style="background: rgba(5, 9, 24, 0.7); border: 1px solid rgba(49, 231, 255, 0.2)">
+                <h4 style="margin-top: 0">Graficas x-t animadas</h4>
+                <canvas id="chart-xt" width="400" height="180" style="width: 100%; border-radius: 10px; background: rgba(8, 14, 34, 0.9)"></canvas>
+              </div>
+              <div class="card" style="background: rgba(5, 9, 24, 0.7); border: 1px solid rgba(49, 231, 255, 0.2)">
+                <h4 style="margin-top: 0">Panel XP de mision</h4>
+                <p>Resuelve 3 retos para reclamar la insignia.</p>
+                <button class="mission-btn xp-gain" data-xp="80">Completar Nivel 1-3 (+80 XP)</button>
+                <p style="margin-top: 10px"><span class="badge">Insignia: Explorador del Movimiento</span></p>
               </div>
             </div>
+          </article>
+        </section>
 
-            <div class="code-block rounded-3xl p-5">
-              <h3 class="text-sm font-semibold uppercase tracking-[0.22em] text-amber-200/70">Pregunta rápida</h3>
-              <p class="mt-3 text-sm text-slate-300">
-                Un estudiante recorre 120 m en 15 s en el patio del colegio. ¿Su rapidez media es mayor o menor que 10 m/s?
-              </p>
-              <div class="mt-4 flex flex-wrap gap-3">
-                <button class="answer-btn rounded-full border border-sky-400/30 bg-sky-400/10 px-4 py-2 text-sm font-semibold text-sky-100" data-answer="correct">Menor</button>
-                <button class="answer-btn rounded-full border border-slate-600 bg-slate-800 px-4 py-2 text-sm font-semibold text-slate-200" data-answer="wrong">Mayor</button>
+        <section id="act2" class="page">
+          <article class="card glass mission">
+            <span class="badge">ACTIVIDAD 2 - La Carrera de los Escuadrones</span>
+            <h3 class="title-font" style="margin: 10px 0">Torneo cooperativo de Cinematica aplicada</h3>
+            <div class="cards-row">
+              <div class="mini">🧑‍✈️ Capitan</div>
+              <div class="mini">⏱️ Cronometrador</div>
+              <div class="mini">📝 Escriba</div>
+              <div class="mini">🎤 Portavoz</div>
+            </div>
+            <div class="grid" style="grid-template-columns: 1fr 1fr; margin-top: 10px">
+              <div class="card" style="background: rgba(8, 13, 28, 0.75); border: 1px solid rgba(255, 255, 255, 0.08)">
+                <h4 style="margin-top: 0">Tabla de posiciones animada</h4>
+                <table class="table" id="ranking-table">
+                  <thead><tr><th>Escuadron</th><th>Puntos</th><th>Progreso</th></tr></thead>
+                  <tbody></tbody>
+                </table>
               </div>
-              <p class="mt-4 text-sm text-slate-400" id="concept-feedback">Elige una opción para comprobar tu respuesta.</p>
-            </div>
-          </div>
-        </article>
-
-        <article id="panel-reto" class="tab-panel glass rounded-3xl p-5 sm:p-7">
-          <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <p class="text-xs uppercase tracking-[0.28em] text-sky-200/70">Desafío</p>
-              <h2 class="mt-2 text-2xl font-bold text-white">Misión de resolución en equipo</h2>
-            </div>
-            <div class="inline-flex items-center gap-2 rounded-2xl border border-emerald-400/20 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-100">
-              <span class="mono text-lg font-semibold" id="challenge-xp">40</span>
-              XP por completar
-            </div>
-          </div>
-
-          <div class="mt-5 grid gap-4 lg:grid-cols-[1fr_1fr]">
-            <div class="metric-card rounded-3xl p-5">
-              <h3 class="text-lg font-semibold text-white">Situación problema</h3>
-              <p class="mt-3 text-sm leading-6 text-slate-300">
-                Una bicicleta escolar recorre 180 m en 12 s. Luego acelera y cambia su velocidad de 6 m/s a 12 m/s en 3 s. El equipo debe identificar rapidez y aceleración, y justificar cada paso.
-              </p>
-              <div class="mt-4 grid gap-3 sm:grid-cols-2">
-                <div class="rounded-2xl border border-white/5 bg-white/4 p-4">
-                  <p class="mono text-xl font-semibold text-sky-200">180 / 12</p>
-                  <p class="mt-1 text-sm text-slate-300">Rapidez inicial</p>
+              <div class="card" style="background: rgba(8, 13, 28, 0.75); border: 1px solid rgba(255, 255, 255, 0.08)">
+                <h4 style="margin-top: 0">Cronometro visual</h4>
+                <p id="timer" style="font-size: 2rem; margin: 8px 0">03:00</p>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap">
+                  <button class="mission-btn" id="start-timer">Iniciar</button>
+                  <button class="mission-btn" id="stop-timer">Pausar</button>
+                  <button class="mission-btn" id="reset-timer">Reiniciar</button>
                 </div>
-                <div class="rounded-2xl border border-white/5 bg-white/4 p-4">
-                  <p class="mono text-xl font-semibold text-amber-200">(12 - 6) / 3</p>
-                  <p class="mt-1 text-sm text-slate-300">Aceleración</p>
+                <canvas id="chart-vt" width="400" height="160" style="width: 100%; margin-top: 12px; border-radius: 10px; background: rgba(9, 14, 30, 0.88)"></canvas>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <section id="act3" class="page">
+          <article class="card glass mission">
+            <span class="badge">ACTIVIDAD 3 - El Diseno del Ingeniero</span>
+            <h3 class="title-font" style="margin: 10px 0">Mision voluntaria: Laboratorio futurista de Newton</h3>
+            <p class="story">
+              Disena un sistema mecanico heroico aplicando leyes de Newton: diagrama de cuerpo libre, calculo de fuerzas, poleas y planos inclinados.
+            </p>
+            <div class="cards-row">
+              <div class="mini">📐 Diagramas de cuerpo libre</div>
+              <div class="mini">💪 Calculo de fuerzas</div>
+              <div class="mini">🧲 Sistema de poleas</div>
+              <div class="mini">🛤️ Planos inclinados</div>
+            </div>
+            <div class="grid" style="grid-template-columns: 1fr 1fr; margin-top: 10px">
+              <div class="card" style="background: rgba(8, 15, 32, 0.78); border: 1px solid rgba(49, 231, 255, 0.2)">
+                <h4 style="margin-top: 0">Area de prototipos</h4>
+                <div class="soft-zone card" style="min-height: 160px">
+                  Espacio para mostrar prototipos, fotos o bocetos del sistema mecanico.
                 </div>
+                <button class="mission-btn" data-modal-open="modalPrototype" style="margin-top: 8px">Ver guia de prototipo</button>
+              </div>
+              <div class="card" style="background: rgba(8, 15, 32, 0.78); border: 1px solid rgba(49, 231, 255, 0.2)">
+                <h4 style="margin-top: 0">Recompensas XP</h4>
+                <ul>
+                  <li>+40 XP por DCL correcto</li>
+                  <li>+60 XP por sistema funcional</li>
+                  <li>+30 XP por sustentacion</li>
+                </ul>
+                <button class="mission-btn xp-gain" data-xp="130">Reclamar recompensas</button>
+                <p style="margin-top: 8px"><span class="badge">Insignia: Mente de Ingeniero</span></p>
               </div>
             </div>
+          </article>
+        </section>
 
-            <div class="metric-card rounded-3xl p-5">
-              <h3 class="text-lg font-semibold text-white">Progreso del equipo</h3>
-              <div class="mt-4 space-y-3 text-sm text-slate-300">
-                <label class="flex items-center gap-3 rounded-2xl border border-white/5 bg-white/4 px-4 py-3"><input type="checkbox" class="h-4 w-4 accent-sky-400" data-xp="10" /> Identificó datos relevantes</label>
-                <label class="flex items-center gap-3 rounded-2xl border border-white/5 bg-white/4 px-4 py-3"><input type="checkbox" class="h-4 w-4 accent-sky-400" data-xp="15" /> Escribió fórmulas correctas</label>
-                <label class="flex items-center gap-3 rounded-2xl border border-white/5 bg-white/4 px-4 py-3"><input type="checkbox" class="h-4 w-4 accent-sky-400" data-xp="15" /> Explicó la unidad de medida</label>
+        <section id="act4" class="page">
+          <article class="card glass soft-zone">
+            <span class="badge">ACTIVIDAD 4 - El Error Fertil</span>
+            <h3 class="title-font" style="margin: 10px 0">Bitacora de crecimiento personal</h3>
+            <p class="story">
+              Reflexiona sobre el proceso de aprendizaje. El error se convierte en motor de mejora y pensamiento critico.
+            </p>
+            <form id="reflection-form" class="grid" style="grid-template-columns: 1fr 1fr; margin-top: 10px">
+              <label class="card" style="background: rgba(24, 31, 56, 0.5)">
+                ¿Que hice?
+                <textarea name="hice" required style="width: 100%; min-height: 100px; margin-top: 6px"></textarea>
+              </label>
+              <label class="card" style="background: rgba(24, 31, 56, 0.5)">
+                ¿Que salio mal?
+                <textarea name="mal" required style="width: 100%; min-height: 100px; margin-top: 6px"></textarea>
+              </label>
+              <label class="card" style="grid-column: 1 / -1; background: rgba(24, 31, 56, 0.5)">
+                ¿Como mejorarlo?
+                <textarea name="mejorar" required style="width: 100%; min-height: 100px; margin-top: 6px"></textarea>
+              </label>
+              <button class="mission-btn" type="submit">Guardar reflexion</button>
+            </form>
+            <div class="scroll" id="reflection-log" style="margin-top: 10px"></div>
+            <p style="margin-top: 10px"><span class="badge">Insignia: El Error Fertil</span></p>
+          </article>
+        </section>
+
+        <section id="act5" class="page">
+          <article class="card glass mission">
+            <span class="badge">ACTIVIDAD 5 - La Gran Prueba del Heroe</span>
+            <h3 class="title-font" style="margin: 10px 0">Torneo final y ceremonia epica</h3>
+            <div class="cards-row">
+              <div class="mini">Ronda 1: Preguntas conceptuales</div>
+              <div class="mini">Ronda 2: Resolucion cooperativa</div>
+              <div class="mini">Ronda 3: Exposicion oral</div>
+            </div>
+            <div class="grid" style="grid-template-columns: 1fr 1fr; margin-top: 12px">
+              <div class="card" style="background: rgba(9, 13, 33, 0.75)">
+                <h4 style="margin-top: 0">Podio animado</h4>
+                <div class="podium">
+                  <div class="podium-step" style="height: 90px; background: #cdd8ef">🥈 Escuadron Beta</div>
+                  <div class="podium-step" style="height: 120px; background: linear-gradient(180deg, #ffe8aa, #f4c86c)">🥇 Escuadron Alfa</div>
+                  <div class="podium-step" style="height: 70px; background: #d9a775">🥉 Escuadron Gamma</div>
+                </div>
+                <p style="margin-top: 10px">Trofeos, emblemas y medallas entregados en la ceremonia final.</p>
               </div>
-              <button id="claim-xp" class="mt-4 rounded-2xl bg-gradient-to-r from-sky-500 to-emerald-500 px-4 py-3 text-sm font-semibold text-white transition hover:brightness-110">
-                Reclamar XP ganado
-              </button>
-            </div>
-          </div>
-        </article>
-
-        <article id="panel-evaluacion" class="tab-panel glass rounded-3xl p-5 sm:p-7">
-          <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p class="text-xs uppercase tracking-[0.28em] text-sky-200/70">Evaluación</p>
-              <h2 class="mt-2 text-2xl font-bold text-white">Rúbrica de gamificación</h2>
-            </div>
-            <p class="text-sm text-slate-400">Pensada para clase, trabajo grupal y retroalimentación rápida.</p>
-          </div>
-
-          <div class="mt-5 overflow-hidden rounded-3xl border border-white/8">
-            <table class="w-full border-collapse text-left text-sm">
-              <thead class="bg-white/5 text-slate-200">
-                <tr>
-                  <th class="px-4 py-3">Criterio</th>
-                  <th class="px-4 py-3">Nivel alto</th>
-                  <th class="px-4 py-3">Puntos</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-white/5 bg-slate-950/50 text-slate-300">
-                <tr>
-                  <td class="px-4 py-3 font-medium text-white">Análisis del problema</td>
-                  <td class="px-4 py-3">Identifica datos y pregunta física.</td>
-                  <td class="px-4 py-3 mono">20</td>
-                </tr>
-                <tr>
-                  <td class="px-4 py-3 font-medium text-white">Procedimiento</td>
-                  <td class="px-4 py-3">Usa fórmulas y unidades correctamente.</td>
-                  <td class="px-4 py-3 mono">30</td>
-                </tr>
-                <tr>
-                  <td class="px-4 py-3 font-medium text-white">Comunicación</td>
-                  <td class="px-4 py-3">Explica con claridad y participa en equipo.</td>
-                  <td class="px-4 py-3 mono">20</td>
-                </tr>
-                <tr>
-                  <td class="px-4 py-3 font-medium text-white">Producto final</td>
-                  <td class="px-4 py-3">Entrega completa y ordenada.</td>
-                  <td class="px-4 py-3 mono">30</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div class="mt-5 grid gap-4 md:grid-cols-3">
-            <div class="metric-card rounded-3xl p-5">
-              <p class="text-sm font-semibold text-sky-200">Insignia Explorador</p>
-              <p class="mt-2 text-sm text-slate-300">Para quien detecta datos y variables.</p>
-            </div>
-            <div class="metric-card rounded-3xl p-5">
-              <p class="text-sm font-semibold text-amber-200">Insignia Calculista</p>
-              <p class="mt-2 text-sm text-slate-300">Para quien resuelve con precisión.</p>
-            </div>
-            <div class="metric-card rounded-3xl p-5">
-              <p class="text-sm font-semibold text-emerald-200">Insignia Vocero</p>
-              <p class="mt-2 text-sm text-slate-300">Para quien expone y argumenta bien.</p>
-            </div>
-          </div>
-        </article>
-
-        <article id="panel-indexhtml" class="tab-panel glass rounded-3xl p-5 sm:p-7">
-          <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p class="text-xs uppercase tracking-[0.28em] text-sky-200/70">Archivo principal</p>
-              <h2 class="mt-2 text-2xl font-bold text-white">index.html</h2>
-            </div>
-            <button id="copy-snippet" class="rounded-2xl border border-sky-400/25 bg-sky-400/10 px-4 py-3 text-sm font-semibold text-sky-100 transition hover:bg-sky-400/15">
-              Copiar estructura
-            </button>
-          </div>
-
-          <div class="mt-5 grid gap-4 lg:grid-cols-[1fr_1.1fr]">
-            <div class="metric-card rounded-3xl p-5">
-              <h3 class="text-lg font-semibold text-white">Qué contiene esta pestaña</h3>
-              <ul class="mt-3 space-y-2 text-sm leading-6 text-slate-300">
-                <li>La estructura base del proyecto.</li>
-                <li>La navegación por las 5 pestañas.</li>
-                <li>La lógica visual y gamificada en un solo archivo.</li>
-                <li>Un espacio para mostrar el código si el docente quiere enseñarlo.</li>
-              </ul>
-            </div>
-
-            <div class="code-block overflow-hidden rounded-3xl">
-              <div class="flex items-center justify-between border-b border-white/5 px-4 py-3 text-xs uppercase tracking-[0.22em] text-slate-400">
-                <span>Vista rápida de index.html</span>
-                <span class="text-emerald-300">Archivo activo</span>
+              <div class="card" style="background: rgba(9, 13, 33, 0.75)">
+                <h4 style="margin-top: 0">Ranking definitivo</h4>
+                <table class="table">
+                  <thead><tr><th>Heroe/Escuadron</th><th>Puntaje final</th></tr></thead>
+                  <tbody>
+                    <tr><td>Alfa</td><td>980</td></tr>
+                    <tr><td>Beta</td><td>910</td></tr>
+                    <tr><td>Gamma</td><td>870</td></tr>
+                  </tbody>
+                </table>
+                <button class="mission-btn" data-modal-open="modalFinal" style="margin-top: 8px">Abrir ceremonia final</button>
               </div>
-              <pre class="overflow-auto p-4 text-xs leading-6 text-slate-200"><code id="snippet">&lt;main&gt;
-  &lt;nav&gt;5 pestañas&lt;/nav&gt;
-  &lt;section&gt;Inicio&lt;/section&gt;
-  &lt;section&gt;Conceptos&lt;/section&gt;
-  &lt;section&gt;Reto&lt;/section&gt;
-  &lt;section&gt;Evaluación&lt;/section&gt;
-  &lt;section&gt;index.html&lt;/section&gt;
-&lt;/main&gt;</code></pre>
             </div>
-          </div>
-        </article>
-      </section>
-    </main>
+          </article>
+        </section>
+      </main>
+    </div>
+
+    <div id="modalStart" class="modal" role="dialog" aria-modal="true">
+      <div class="modal-box glass">
+        <h3 class="title-font">Aventura iniciada</h3>
+        <p>El Gran Maestre te da la bienvenida. Tu primera mision ya esta desbloqueada.</p>
+        <button class="mission-btn xp-gain" data-xp="40">Reclamar bono inicial (+40 XP)</button>
+        <button class="mission-btn" data-modal-close="modalStart" style="margin-left: 8px">Cerrar</button>
+      </div>
+    </div>
+
+    <div id="modalPrototype" class="modal" role="dialog" aria-modal="true">
+      <div class="modal-box glass">
+        <h3 class="title-font">Guia de prototipo</h3>
+        <p>Incluye objetivo, materiales, diagrama de fuerzas y evidencia de prueba.</p>
+        <button class="mission-btn" data-modal-close="modalPrototype">Entendido</button>
+      </div>
+    </div>
+
+    <div id="modalFinal" class="modal" role="dialog" aria-modal="true">
+      <div class="modal-box glass">
+        <h3 class="title-font">Ceremonia del Maestro Heroe</h3>
+        <p>La academia reconoce el esfuerzo, la colaboracion y el pensamiento cientifico aplicado.</p>
+        <p><span class="badge">Emblema Supremo desbloqueado</span></p>
+        <button class="mission-btn xp-gain" data-xp="120">Recibir premio final (+120 XP)</button>
+        <button class="mission-btn" data-modal-close="modalFinal" style="margin-left: 8px">Cerrar</button>
+      </div>
+    </div>
 
     <script>
-      const tabs = Array.from(document.querySelectorAll(".tab-button"));
-      const panels = {
-        inicio: document.getElementById("panel-inicio"),
-        conceptos: document.getElementById("panel-conceptos"),
-        reto: document.getElementById("panel-reto"),
-        evaluacion: document.getElementById("panel-evaluacion"),
-        indexhtml: document.getElementById("panel-indexhtml"),
-      };
+      const pages = Array.from(document.querySelectorAll(".page"));
+      const navButtons = Array.from(document.querySelectorAll(".nav-btn"));
+      const xpFill = document.getElementById("xp-fill");
+      const xpText = document.getElementById("xp-text");
+      const rankName = document.getElementById("rank-name");
+      let xp = 120;
+      const maxXP = 1000;
 
-      function showTab(name) {
-        tabs.forEach((button) => {
-          const active = button.dataset.tab === name;
-          button.classList.toggle("is-active", active);
-          button.setAttribute("aria-pressed", String(active));
-        });
+      const ranks = [
+        { name: "Aprendiz", min: 0 },
+        { name: "Explorador", min: 200 },
+        { name: "Cientifico", min: 400 },
+        { name: "Experto", min: 700 },
+        { name: "Maestro Heroe", min: 900 },
+      ];
 
-        Object.entries(panels).forEach(([key, panel]) => {
-          panel.classList.toggle("is-active", key === name);
-        });
+      function updateXP() {
+        const pct = Math.min(100, Math.round((xp / maxXP) * 100));
+        xpFill.style.width = `${pct}%`;
+        xpText.textContent = `${xp} XP`;
+        const currentRank = [...ranks].reverse().find((r) => xp >= r.min);
+        rankName.textContent = currentRank.name;
       }
 
-      tabs.forEach((button) => {
-        button.addEventListener("click", () => showTab(button.dataset.tab));
-      });
-
-      const answerButtons = Array.from(document.querySelectorAll(".answer-btn"));
-      const feedback = document.getElementById("concept-feedback");
-      answerButtons.forEach((button) => {
-        button.addEventListener("click", () => {
-          const correct = button.dataset.answer === "correct";
-          feedback.textContent = correct
-            ? "Correcto: 120 / 15 = 8 m/s, así que es menor que 10 m/s."
-            : "Todavía no: 120 / 15 da 8 m/s, no mayor que 10 m/s.";
-          feedback.className = correct ? "mt-4 text-sm text-emerald-300" : "mt-4 text-sm text-rose-300";
+      navButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const target = btn.dataset.target;
+          navButtons.forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          pages.forEach((p) => p.classList.toggle("active", p.id === target));
         });
       });
 
-      const xpDisplay = document.getElementById("xp-display");
-      const challengeXp = document.getElementById("challenge-xp");
-      const claimButton = document.getElementById("claim-xp");
-      const checkboxes = Array.from(document.querySelectorAll('input[type="checkbox"][data-xp]'));
-      let xp = 120;
-
-      claimButton.addEventListener("click", () => {
-        const gained = checkboxes.reduce((sum, input) => sum + (input.checked ? Number(input.dataset.xp) : 0), 0);
-        xp += gained;
-        xpDisplay.textContent = String(xp);
-        challengeXp.textContent = String(gained);
-        claimButton.textContent = gained > 0 ? `XP reclamados: +${gained}` : "No hay XP para reclamar";
+      document.querySelectorAll(".accordion-toggle").forEach((toggle) => {
+        toggle.addEventListener("click", () => {
+          toggle.closest(".accordion").classList.toggle("open");
+        });
       });
 
-      const copyButton = document.getElementById("copy-snippet");
-      const snippet = document.getElementById("snippet").innerText;
-      copyButton.addEventListener("click", async () => {
-        try {
-          await navigator.clipboard.writeText(snippet);
-          copyButton.textContent = "Estructura copiada";
-        } catch {
-          copyButton.textContent = "No se pudo copiar";
+      document.querySelectorAll("[data-modal-open]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document.getElementById(btn.dataset.modalOpen).classList.add("open");
+        });
+      });
+
+      document.querySelectorAll("[data-modal-close]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document.getElementById(btn.dataset.modalClose).classList.remove("open");
+        });
+      });
+
+      document.querySelectorAll(".xp-gain").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const gain = Number(btn.dataset.xp || 0);
+          xp += gain;
+          updateXP();
+        });
+      });
+
+      const teams = [
+        { name: "Alfa", score: 88 },
+        { name: "Beta", score: 76 },
+        { name: "Gamma", score: 69 },
+        { name: "Delta", score: 63 },
+      ];
+
+      const rankingBody = document.querySelector("#ranking-table tbody");
+      rankingBody.innerHTML = teams
+        .sort((a, b) => b.score - a.score)
+        .map(
+          (t) => `<tr><td>${t.name}</td><td>${t.score}</td><td><div style="height:8px;background:#18294e;border-radius:999px"><div style="height:8px;width:${t.score}%;background:linear-gradient(90deg,#31e7ff,#f4c86c);border-radius:999px"></div></div></td></tr>`,
+        )
+        .join("");
+
+      let remaining = 180;
+      let timerInt = null;
+      const timerNode = document.getElementById("timer");
+
+      function drawTime() {
+        const m = Math.floor(remaining / 60);
+        const s = String(remaining % 60).padStart(2, "0");
+        timerNode.textContent = `0${m}:${s}`;
+      }
+
+      document.getElementById("start-timer").addEventListener("click", () => {
+        if (timerInt) return;
+        timerInt = setInterval(() => {
+          if (remaining === 0) {
+            clearInterval(timerInt);
+            timerInt = null;
+            return;
+          }
+          remaining -= 1;
+          drawTime();
+        }, 1000);
+      });
+
+      document.getElementById("stop-timer").addEventListener("click", () => {
+        clearInterval(timerInt);
+        timerInt = null;
+      });
+
+      document.getElementById("reset-timer").addEventListener("click", () => {
+        clearInterval(timerInt);
+        timerInt = null;
+        remaining = 180;
+        drawTime();
+      });
+
+      function drawSimpleChart(canvasId, points, color) {
+        const canvas = document.getElementById(canvasId);
+        const ctx = canvas.getContext("2d");
+        const w = canvas.width;
+        const h = canvas.height;
+        const pad = 22;
+        ctx.clearRect(0, 0, w, h);
+        ctx.strokeStyle = "rgba(255,255,255,.12)";
+        for (let i = 0; i < 5; i += 1) {
+          const y = pad + ((h - pad * 2) * i) / 4;
+          ctx.beginPath();
+          ctx.moveTo(pad, y);
+          ctx.lineTo(w - pad, y);
+          ctx.stroke();
         }
+        ctx.beginPath();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2.6;
+        points.forEach((p, i) => {
+          const x = pad + ((w - pad * 2) * i) / (points.length - 1);
+          const y = h - pad - ((h - pad * 2) * p) / 100;
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+      }
+
+      drawSimpleChart("chart-xt", [10, 20, 35, 50, 72, 92], "#31e7ff");
+      drawSimpleChart("chart-vt", [14, 26, 40, 38, 62, 70], "#f4c86c");
+
+      document.getElementById("reflection-form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const data = new FormData(e.target);
+        const block = document.createElement("article");
+        block.className = "mini";
+        block.innerHTML = `<strong>Bitacora guardada</strong><br /><small>Que hice:</small> ${data.get("hice")}<br /><small>Que salio mal:</small> ${data.get("mal")}<br /><small>Como mejorarlo:</small> ${data.get("mejorar")}`;
+        document.getElementById("reflection-log").prepend(block);
+        e.target.reset();
+        xp += 35;
+        updateXP();
       });
+
+      const particleCanvas = document.getElementById("particles");
+      const pCtx = particleCanvas.getContext("2d");
+      const particles = [];
+
+      function resizeParticles() {
+        particleCanvas.width = window.innerWidth;
+        particleCanvas.height = window.innerHeight;
+      }
+
+      function initParticles() {
+        particles.length = 0;
+        const count = Math.min(90, Math.floor(window.innerWidth / 18));
+        for (let i = 0; i < count; i += 1) {
+          particles.push({
+            x: Math.random() * particleCanvas.width,
+            y: Math.random() * particleCanvas.height,
+            r: Math.random() * 2 + 0.6,
+            vx: (Math.random() - 0.5) * 0.22,
+            vy: (Math.random() - 0.5) * 0.22,
+          });
+        }
+      }
+
+      function animateParticles() {
+        pCtx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
+        for (const p of particles) {
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.x < 0 || p.x > particleCanvas.width) p.vx *= -1;
+          if (p.y < 0 || p.y > particleCanvas.height) p.vy *= -1;
+          pCtx.beginPath();
+          pCtx.fillStyle = "rgba(49,231,255,.55)";
+          pCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          pCtx.fill();
+        }
+        requestAnimationFrame(animateParticles);
+      }
+
+      window.addEventListener("resize", () => {
+        resizeParticles();
+        initParticles();
+      });
+
+      resizeParticles();
+      initParticles();
+      animateParticles();
+      updateXP();
+      drawTime();
     </script>
   </body>
 </html>
