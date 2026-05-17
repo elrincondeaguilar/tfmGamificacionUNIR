@@ -42,7 +42,8 @@ body {
       transparent 40%
     ),
     linear-gradient(165deg, #03050e 0%, #080e1f 45%, #090812 100%);
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 button,
@@ -327,7 +328,7 @@ textarea:focus-visible {
 .accordion {
   border: 1px solid rgba(149, 167, 195, 0.25);
   border-radius: 12px;
-  /* overflow: hidden; */
+  overflow: hidden;
   margin-bottom: 10px;
 }
 
