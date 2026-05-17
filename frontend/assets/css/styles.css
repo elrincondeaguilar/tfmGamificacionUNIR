@@ -143,7 +143,9 @@ textarea:focus-visible {
 
 .main {
   padding: 18px;
-  overflow: auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .header {
