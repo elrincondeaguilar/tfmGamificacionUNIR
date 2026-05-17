@@ -303,8 +303,16 @@ textarea:focus-visible {
   border-radius: 16px;
   border: 1px solid rgba(49, 231, 255, 0.25);
   background:
-    radial-gradient(circle at 20% 20%, rgba(49, 231, 255, 0.25), transparent 40%),
-    radial-gradient(circle at 80% 75%, rgba(244, 200, 108, 0.22), transparent 35%),
+    radial-gradient(
+      circle at 20% 20%,
+      rgba(49, 231, 255, 0.25),
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at 80% 75%,
+      rgba(244, 200, 108, 0.22),
+      transparent 35%
+    ),
     linear-gradient(160deg, rgba(10, 17, 40, 0.8), rgba(13, 9, 24, 0.88));
 }
 
