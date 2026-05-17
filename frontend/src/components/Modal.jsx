@@ -1,11 +1,14 @@
 export default function Modal({ id, title, children, open, onClose }) {
+  if (!open) {
+    return null;
+  }
+
   return (
     <div
       id={id}
       className={`modal ${open ? "open" : ""}`}
       role="dialog"
       aria-modal="true"
-      aria-hidden={!open}
       onClick={(event) => {
         if (event.target === event.currentTarget) {
           onClose();
