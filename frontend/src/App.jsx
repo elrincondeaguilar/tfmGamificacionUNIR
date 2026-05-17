@@ -58,6 +58,14 @@ export default function App() {
   );
   const timer = useMemo(() => formatTimer(timerRemaining), [timerRemaining]);
 
+  function closeModal() {
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+
+    setOpenModal(null);
+  }
+
   // Verificar si hay sesión activa al cargar
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -118,7 +126,7 @@ export default function App() {
     if (modal?.action?.xp) {
       handleGainXp(modal.action.xp);
     }
-    setOpenModal(null);
+    closeModal();
   }
 
   function handleLogout() {
@@ -230,7 +238,7 @@ export default function App() {
         id="modalStart"
         title={modalContent.modalStart.title}
         open={openModal === "modalStart"}
-        onClose={() => setOpenModal(null)}
+        onClose={closeModal}
       >
         <p>{modalContent.modalStart.body}</p>
         <button
@@ -244,7 +252,7 @@ export default function App() {
           className="mission-btn"
           type="button"
           style={{ marginLeft: "8px" }}
-          onClick={() => setOpenModal(null)}
+          onClick={closeModal}
         >
           Cerrar
         </button>
@@ -254,14 +262,10 @@ export default function App() {
         id="modalPrototype"
         title={modalContent.modalPrototype.title}
         open={openModal === "modalPrototype"}
-        onClose={() => setOpenModal(null)}
+        onClose={closeModal}
       >
         <p>{modalContent.modalPrototype.body}</p>
-        <button
-          className="mission-btn"
-          type="button"
-          onClick={() => setOpenModal(null)}
-        >
+        <button className="mission-btn" type="button" onClick={closeModal}>
           Cerrar
         </button>
       </Modal>

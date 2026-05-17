@@ -12,11 +12,16 @@ const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || "secret-key";
 
 const sheets = google.sheets("v4");
-const BACKEND_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const BACKEND_DIR = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "..",
+);
 
 function resolveServiceAccountKeyPath(keyPath) {
   if (!keyPath) return null;
-  return path.isAbsolute(keyPath) ? keyPath : path.resolve(BACKEND_DIR, keyPath);
+  return path.isAbsolute(keyPath)
+    ? keyPath
+    : path.resolve(BACKEND_DIR, keyPath);
 }
 
 // Crear GoogleAuth config dinámicamente
