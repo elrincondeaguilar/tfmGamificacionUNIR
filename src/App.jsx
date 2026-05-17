@@ -6,6 +6,7 @@ import ActivityPages from "./components/ActivityPages";
 import Sidebar from "./components/Sidebar";
 import LoginPage from "./components/LoginPage";
 import RegisterPage from "./components/RegisterPage";
+import { apiUrl } from "./config/api";
 import { gameConfig, initialReflection } from "./data/gameData";
 
 const modalContent = {
@@ -80,7 +81,7 @@ export default function App() {
     try {
       const token = localStorage.getItem("token");
       if (!token) return;
-      const res = await fetch("http://localhost:5000/api/auth/progress", {
+      const res = await fetch(apiUrl("/api/auth/progress"), {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
