@@ -199,6 +199,12 @@ textarea:focus-visible {
   padding: 14px;
 }
 
+.mission {
+  max-height: 90vh;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
 .particles {
   position: fixed;
   inset: 0;
