@@ -3,18 +3,43 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { google } from "googleapis";
 import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
 
 dotenv.config();
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || "secret-key";
 
-// Configurar Google Sheets
 const sheets = google.sheets("v4");
-const auth = new google.auth.GoogleAuth({
-  keyFile: process.env.GOOGLE_SERVICE_ACCOUNT_KEY,
+const BACKEND_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+
+function resolveServiceAccountKeyPath(keyPath) {
+  if (!keyPath) return null;
+  return path.isAbsolute(keyPath) ? keyPath : path.resolve(BACKEND_DIR, keyPath);
+}
+
+// Crear GoogleAuth config dinámicamente
+const googleAuthConfig = {
   scopes: ["https://www.googleapis.com/auth/spreadsheets"],
-});
+};
+
+// Si existe GOOGLE_SERVICE_ACCOUNT_KEY_JSON, parsearlo (Render)
+if (process.env.GOOGLE_SERVICE_ACCOUNT_KEY_JSON) {
+  try {
+    const keyData = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_KEY_JSON);
+    googleAuthConfig.credentials = keyData;
+  } catch (error) {
+    console.error("Error al parsear GOOGLE_SERVICE_ACCOUNT_KEY_JSON:", error);
+  }
+} else if (process.env.GOOGLE_SERVICE_ACCOUNT_KEY) {
+  // Usar archivo (desarrollo local)
+  googleAuthConfig.keyFile = resolveServiceAccountKeyPath(
+    process.env.GOOGLE_SERVICE_ACCOUNT_KEY,
+  );
+}
+
+const auth = new google.auth.GoogleAuth(googleAuthConfig);
 
 const SPREADSHEET_ID = process.env.GOOGLE_SHEETS_SPREADSHEET_ID;
 // Columnas esperadas en 'Hoja 1':
@@ -35,6 +60,18 @@ async function getSheetData(range) {
   } catch (error) {
     console.error("Error leyendo Google Sheets:", error);
     throw error;
+  }
+}
+
+function ensureGoogleSheetsConfig() {
+  if (!SPREADSHEET_ID) {
+    throw new Error("Falta configurar GOOGLE_SHEETS_SPREADSHEET_ID");
+  }
+
+  if (!googleAuthConfig.credentials && !googleAuthConfig.keyFile) {
+    throw new Error(
+      "Falta configurar GOOGLE_SERVICE_ACCOUNT_KEY_JSON o GOOGLE_SERVICE_ACCOUNT_KEY",
+    );
   }
 }
 
@@ -105,6 +142,8 @@ async function appendToSheet(range, values) {
 // POST /api/auth/register
 router.post("/register", async (req, res) => {
   try {
+    ensureGoogleSheetsConfig();
+
     const { email, nombre, password, matricula } = req.body;
 
     if (!email || !nombre || !password) {
@@ -169,6 +208,8 @@ router.post("/register", async (req, res) => {
 // POST /api/auth/login
 router.post("/login", async (req, res) => {
   try {
+    ensureGoogleSheetsConfig();
+
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -218,6 +259,8 @@ router.post("/login", async (req, res) => {
 // PATCH /api/auth/progress - actualizar progreso del usuario (xp, insignias, ranking, escuadron)
 router.patch("/progress", verifyToken, async (req, res) => {
   try {
+    ensureGoogleSheetsConfig();
+
     const email = req.user?.email;
     if (!email) return res.status(400).json({ error: "Usuario inválido" });
 
