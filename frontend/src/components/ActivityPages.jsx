@@ -31,6 +31,13 @@ function Activity0({ onOpenModal }) {
             academia. Aqui los estudiantes ascienden por rangos dominando
             misiones de fisica mecanica y trabajo cooperativo.
           </p>
+          <button
+            className="mission-btn"
+            style={{ marginTop: 12 }}
+            onClick={() => onOpenModal("modalStart")}
+          >
+            Iniciar aventura
+          </button>
           <div className="hero-illu" aria-hidden="true">
             🧪 ⚡ 🛡️ 📘
           </div>
@@ -47,13 +54,6 @@ function Activity0({ onOpenModal }) {
               Aprendere del error y apoyare a mi escuadron.
             </p>
           </div>
-          <button
-            className="mission-btn"
-            style={{ marginTop: 12 }}
-            onClick={() => onOpenModal("modalStart")}
-          >
-            Iniciar aventura
-          </button>
         </article>
         <aside className="card glass">
           <h4 className="title-font" style={{ margin: "0 0 8px" }}>
