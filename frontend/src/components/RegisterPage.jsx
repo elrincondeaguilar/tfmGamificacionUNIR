@@ -4,6 +4,7 @@ import { apiUrl } from "../config/api";
 export default function RegisterPage({ onRegisterSuccess, onSwitchToLogin }) {
   const [email, setEmail] = useState("");
   const [nombre, setNombre] = useState("");
+  const [heroe, setHeroe] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [matricula, setMatricula] = useState("");
@@ -30,7 +31,7 @@ export default function RegisterPage({ onRegisterSuccess, onSwitchToLogin }) {
       const response = await fetch(apiUrl("/api/auth/register"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, nombre, password, matricula }),
+        body: JSON.stringify({ email, nombre, password, matricula, heroe }),
       });
 
       const data = await response.json();
@@ -96,6 +97,18 @@ export default function RegisterPage({ onRegisterSuccess, onSwitchToLogin }) {
               placeholder="2024001"
               value={matricula}
               onChange={(e) => setMatricula(e.target.value)}
+              disabled={loading}
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="heroe">Nombre del héroe</label>
+            <input
+              id="heroe"
+              type="text"
+              placeholder="Ej: Aurora, Atlas..."
+              value={heroe}
+              onChange={(e) => setHeroe(e.target.value)}
               disabled={loading}
             />
           </div>

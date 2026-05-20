@@ -32,7 +32,16 @@ export default function Header({
             <div
               className="xp-fill"
               style={{
-                width: `${xpPercent ?? Math.min(100, Math.round((xp / maxXP) * 100))}%`,
+                width: (() => {
+                  const calcPercent =
+                    typeof xpPercent === "number"
+                      ? xpPercent
+                      : maxXP
+                      ? Math.min(100, Math.round((xp / maxXP) * 100))
+                      : 0;
+                  // ensure finite number
+                  return `${Number.isFinite(calcPercent) ? calcPercent : 0}%`;
+                })(),
               }}
             />
           </div>
@@ -45,6 +54,18 @@ export default function Header({
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
             <div style={{ textAlign: "right" }}>
               <p style={{ margin: 0, fontSize: "0.9rem" }}>{user.nombre}</p>
+              {user.heroe && (
+                <p
+                  style={{
+                    margin: 0,
+                    fontSize: "0.8rem",
+                    color: "var(--muted)",
+                  }}
+                >
+                  Héroe:{" "}
+                  <span style={{ color: "var(--accent)" }}>{user.heroe}</span>
+                </p>
+              )}
               <button
                 onClick={onLogout}
                 style={{

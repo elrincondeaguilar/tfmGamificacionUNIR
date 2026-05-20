@@ -49,8 +49,8 @@ const auth = new google.auth.GoogleAuth(googleAuthConfig);
 const SPREADSHEET_ID = process.env.GOOGLE_SHEETS_SPREADSHEET_ID;
 // Columnas esperadas en 'Hoja 1':
 // A: Email, B: Nombre, C: Password(hash), D: Matricula, E: Fecha,
-// F: XP, G: Insignias (csv), H: Ranking, I: Escuadron
-const USERS_RANGE = "'Hoja 1'!A:I";
+// F: XP, G: Insignias (csv), H: Ranking, I: Escuadron, J: Héroe
+const USERS_RANGE = "'Hoja 1'!A:J";
 
 // Obtener datos de Google Sheets
 async function getSheetData(range) {
@@ -83,7 +83,7 @@ function ensureGoogleSheetsConfig() {
 async function updateSheetRow(rowNumber, values) {
   try {
     const authClient = await auth.getClient();
-    const range = `'Hoja 1'!A${rowNumber}:I${rowNumber}`;
+    const range = `'Hoja 1'!A${rowNumber}:J${rowNumber}`;
     await sheets.spreadsheets.values.update({
       auth: authClient,
       spreadsheetId: SPREADSHEET_ID,
@@ -108,6 +108,7 @@ function parseUserRow(row) {
     insignias: (row[6] || "").split(",").filter(Boolean),
     ranking: row[7] ?? "",
     escuadron: row[8] ?? "",
+    heroe: row[9] ?? "",
   };
 }
 
@@ -149,7 +150,7 @@ router.post("/register", async (req, res) => {
   try {
     ensureGoogleSheetsConfig();
 
-    const { email, nombre, password, matricula } = req.body;
+    const { email, nombre, password, matricula, heroe } = req.body;
 
     if (!email || !nombre || !password) {
       return res.status(400).json({ error: "Faltan campos requeridos" });
@@ -173,7 +174,7 @@ router.post("/register", async (req, res) => {
     const ranking = "Aprendiz";
     const escuadron = "";
 
-    // Agregar usuario a Google Sheets (columnas A..I)
+    // Agregar usuario a Google Sheets (columnas A..J)
     await appendToSheet(USERS_RANGE, [
       email,
       nombre,
@@ -184,6 +185,7 @@ router.post("/register", async (req, res) => {
       insignias,
       ranking,
       escuadron,
+      heroe || "",
     ]);
 
     // Generar token JWT
@@ -202,6 +204,7 @@ router.post("/register", async (req, res) => {
         insignias: [],
         ranking,
         escuadron,
+        heroe: heroe || "",
       },
     });
   } catch (error) {
@@ -249,6 +252,7 @@ router.post("/login", async (req, res) => {
         email: userObj.email,
         nombre: userObj.nombre,
         matricula: userObj.matricula,
+        heroe: userObj.heroe,
         xp: userObj.xp,
         insignias: userObj.insignias,
         ranking: userObj.ranking,
@@ -294,6 +298,7 @@ router.patch("/progress", verifyToken, async (req, res) => {
       newInsignias,
       newRanking,
       newEscuadron,
+      parsed.heroe || "",
     ];
 
     await updateSheetRow(rowNumber, updatedRow);
@@ -307,6 +312,7 @@ router.patch("/progress", verifyToken, async (req, res) => {
         insignias: (newInsignias || "").split(",").filter(Boolean),
         ranking: newRanking,
         escuadron: newEscuadron,
+        heroe: parsed.heroe || "",
       },
     });
   } catch (error) {

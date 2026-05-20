@@ -9,6 +9,7 @@ export const gameConfig = {
     { name: "Experto", min: 700 },
     { name: "Maestro Heroe", min: 900 },
   ],
+  maxXP: 1000,
   navigation: [
     { id: "act0", label: "⚔️ Actividad 0" },
     { id: "act1", label: "🌲 Actividad 1" },

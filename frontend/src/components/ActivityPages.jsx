@@ -34,9 +34,6 @@ function Activity0({ onOpenModal }) {
             academia. Aqui los estudiantes ascienden por rangos dominando
             misiones de fisica mecanica y trabajo cooperativo.
           </p>
-          <div className="hero-illu" aria-hidden="true">
-            🧪 ⚡ 🛡️ 📘
-          </div>
           <div className="cards-row" style={{ marginTop: 10 }}>
             <div className="mini">🧭 Escuadrones</div>
             <div className="mini">📚 Libro de Heroes</div>
@@ -52,7 +49,7 @@ function Activity0({ onOpenModal }) {
           </div>
           <button
             className="mission-btn"
-            style={{ marginTop: "auto", alignSelf: "flex-start" }}
+            style={{ alignSelf: "flex-start" }}
             onClick={() => onOpenModal("modalStart")}
           >
             Iniciar aventura
