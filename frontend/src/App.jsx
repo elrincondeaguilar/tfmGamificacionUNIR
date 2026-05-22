@@ -514,6 +514,19 @@ export default function App() {
         open={missionVideoOpen}
         onClose={closeMissionVideo}
         className="modal-box--video"
+        headerActions={
+          <div className="modal-box__actions">
+            <button
+              className="modal-icon-btn"
+              type="button"
+              onClick={closeMissionVideo}
+              aria-label="Cerrar modal"
+              title="Cerrar"
+            >
+              ×
+            </button>
+          </div>
+        }
       >
         <div className="video-modal">
           <div className="video-modal__frame">
