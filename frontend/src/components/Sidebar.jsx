@@ -4,6 +4,9 @@ export default function Sidebar({
   onNavigate,
   title,
   rankTrack,
+  leaderboard,
+  currentUserEmail,
+  currentUserName,
 }) {
   return (
     <aside className="sidebar">
@@ -13,6 +16,36 @@ export default function Sidebar({
           La Academia del Heroe
         </p>
         <div className="rank-track">{rankTrack}</div>
+      </section>
+      <section className="ranking-panel glass">
+        <div className="ranking-panel__header">
+          <h2 className="ranking-panel__title">Ranking global</h2>
+          <span className="ranking-panel__count">
+            {leaderboard.length} usuarios
+          </span>
+        </div>
+        <ol className="ranking-list">
+          {leaderboard.map((user) => {
+            const isCurrentUser =
+              user.email === currentUserEmail ||
+              user.nombre === currentUserName;
+
+            return (
+              <li
+                key={user.email}
+                className={`ranking-item ${isCurrentUser ? "ranking-item--current" : ""}`}
+              >
+                <div>
+                  <strong>
+                    #{user.position} {user.nombre}
+                  </strong>
+                  <div className="ranking-item__meta">{user.ranking}</div>
+                </div>
+                <div className="ranking-item__xp">{user.xp} XP</div>
+              </li>
+            );
+          })}
+        </ol>
       </section>
       <nav className="nav-list" aria-label="Actividades">
         {navigation.map((item) => (

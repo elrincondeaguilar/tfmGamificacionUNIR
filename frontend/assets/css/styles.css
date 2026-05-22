@@ -106,6 +106,67 @@ textarea:focus-visible {
   line-height: 1.35;
 }
 
+.ranking-panel {
+  border-radius: 18px;
+  padding: 14px;
+  margin-bottom: 12px;
+}
+
+.ranking-panel__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+
+.ranking-panel__title {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.ranking-panel__count {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.ranking-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.ranking-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(49, 231, 255, 0.14);
+  background: rgba(13, 21, 46, 0.36);
+}
+
+.ranking-item--current {
+  border-color: rgba(244, 200, 108, 0.7);
+  background: rgba(244, 200, 108, 0.14);
+}
+
+.ranking-item__meta {
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.ranking-item__xp {
+  white-space: nowrap;
+  color: var(--gold);
+  font-weight: 700;
+}
+
 .nav-list {
   display: grid;
   gap: 8px;
@@ -284,10 +345,13 @@ textarea:focus-visible {
 }
 
 .mini {
+  display: block;
   border: 1px solid var(--line);
   border-radius: 12px;
   padding: 8px 10px;
   background: rgba(8, 15, 35, 0.65);
+  color: inherit;
+  text-decoration: none;
 }
 
 .mini--clickable {
@@ -303,6 +367,36 @@ textarea:focus-visible {
   transform: translateY(-1px);
   border-color: rgba(244, 200, 108, 0.7);
   background: rgba(12, 21, 45, 0.88);
+}
+
+.mini--selected {
+  border-color: rgba(244, 200, 108, 0.85);
+  background: rgba(244, 200, 108, 0.16);
+}
+
+.registered-list,
+.ranking-summary {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.registered-list__item,
+.ranking-summary__item {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(8, 15, 35, 0.45);
+  border: 1px solid rgba(49, 231, 255, 0.14);
+}
+
+.registered-list__item p,
+.ranking-summary__item p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.82rem;
 }
 
 .badge {

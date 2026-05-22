@@ -118,6 +118,7 @@ export default function App() {
   const [badgeCarouselOpen, setBadgeCarouselOpen] = useState(false);
   const [badgeCarouselIndex, setBadgeCarouselIndex] = useState(0);
   const [badgeCarouselFullscreen, setBadgeCarouselFullscreen] = useState(false);
+  const [leaderboard, setLeaderboard] = useState([]);
   const missionVideoContainerRef = useRef(null);
   const missionVideoPlayerRef = useRef(null);
 
@@ -227,6 +228,52 @@ export default function App() {
       setXp(user.xp ?? 0);
       localStorage.setItem("user", JSON.stringify(user));
     }
+  }, [user]);
+
+  useEffect(() => {
+    if (!user) {
+      setLeaderboard([]);
+      return undefined;
+    }
+
+    let cancelled = false;
+
+    async function loadLeaderboard() {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          setLeaderboard([]);
+          return;
+        }
+
+        const response = await fetch(apiUrl("/api/auth/ranking"), {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("No se pudo cargar el ranking");
+        }
+
+        const data = await response.json();
+
+        if (!cancelled) {
+          setLeaderboard(Array.isArray(data.ranking) ? data.ranking : []);
+        }
+      } catch (error) {
+        console.error(error);
+        if (!cancelled) {
+          setLeaderboard([]);
+        }
+      }
+    }
+
+    loadLeaderboard();
+
+    return () => {
+      cancelled = true;
+    };
   }, [user]);
 
   async function persistProgressToServer(newXp) {
@@ -422,6 +469,9 @@ export default function App() {
           onNavigate={setActivePage}
           title={gameConfig.appTitle}
           rankTrack={gameConfig.rankTrack}
+          leaderboard={leaderboard}
+          currentUserEmail={user.email}
+          currentUserName={user.nombre}
         />
 
         <main className="main">
@@ -441,6 +491,7 @@ export default function App() {
             onMissionClick={openMissionVideo}
             onOpenBadges={openBadgeCarousel}
             activity0Completed={activity0Completed}
+            leaderboard={leaderboard}
             onGainXp={handleGainXp}
             teams={gameConfig.teams}
             timer={timer}

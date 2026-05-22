@@ -60,7 +60,15 @@ export function IntroSection({ onMissionClick, onOpenBadges }) {
           </div> */}
           {/* <div className="cards-row" style={{ marginTop: "10px" }}>
             <div className="mini">🧭 Escuadrones</div>
-            <div className="mini">📚 Libro de Heroes</div>
+            <a
+              className="mini"
+              href="https://drive.google.com/file/d/19LneXeAXTaDeHTs1nBllwsOSvuYQxG_5/view?usp=drive_link"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Ver y descargar el Libro de Heroes"
+            >
+              📚 Libro de Heroes
+            </a>
             <div className="mini">🥇 Ranking</div>
             <div
               className="mini mini--clickable"

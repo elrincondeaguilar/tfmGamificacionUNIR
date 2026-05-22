@@ -17,7 +17,11 @@ function AccordionItem({ title, children }) {
   );
 }
 
-function Activity0({ onMissionClick, onOpenBadges, completed }) {
+function Activity0({ onMissionClick, onOpenBadges, completed, leaderboard }) {
+  const [activePanel, setActivePanel] = useState(null);
+
+  const registeredUsers = leaderboard ?? [];
+
   return (
     <section id="act0" className="page active">
       <div className="grid" style={{ gridTemplateColumns: "1.2fr 0.8fr" }}>
@@ -35,9 +39,59 @@ function Activity0({ onMissionClick, onOpenBadges, completed }) {
             misiones de fisica mecanica y trabajo cooperativo.
           </p>
           <div className="cards-row" style={{ marginTop: 10 }}>
-            <div className="mini">🧭 Escuadrones</div>
-            <div className="mini">📚 Libro de Heroes</div>
-            <div className="mini">🥇 Ranking</div>
+            <div
+              className={`mini mini--clickable ${
+                activePanel === "escuadrones" ? "mini--selected" : ""
+              }`}
+              role="button"
+              tabIndex={0}
+              onClick={() =>
+                setActivePanel((current) =>
+                  current === "escuadrones" ? null : "escuadrones",
+                )
+              }
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  setActivePanel((current) =>
+                    current === "escuadrones" ? null : "escuadrones",
+                  );
+                }
+              }}
+            >
+              🧭 Escuadrones
+            </div>
+            <a
+              className="mini mini--clickable"
+              href="https://drive.google.com/file/d/19LneXeAXTaDeHTs1nBllwsOSvuYQxG_5/view?usp=drive_link"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Ver y descargar el Libro de Heroes"
+            >
+              📚 Libro de Heroes
+            </a>
+            <div
+              className={`mini mini--clickable ${
+                activePanel === "ranking" ? "mini--selected" : ""
+              }`}
+              role="button"
+              tabIndex={0}
+              onClick={() =>
+                setActivePanel((current) =>
+                  current === "ranking" ? null : "ranking",
+                )
+              }
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  setActivePanel((current) =>
+                    current === "ranking" ? null : "ranking",
+                  );
+                }
+              }}
+            >
+              🥇 Ranking
+            </div>
             <div
               className="mini mini--clickable"
               role="button"
@@ -52,6 +106,54 @@ function Activity0({ onMissionClick, onOpenBadges, completed }) {
             >
               🎖️ Insignias
             </div>
+            {activePanel === "escuadrones" ? (
+              <div className="parchment" style={{ marginTop: 12 }}>
+                <strong>Escuadrones registrados</strong>
+                {registeredUsers.length > 0 ? (
+                  <div className="registered-list">
+                    {registeredUsers.map((user) => (
+                      <div key={user.email} className="registered-list__item">
+                        <div>
+                          <strong>{user.nombre}</strong>
+                          <p>
+                            {user.heroe || "Sin héroe"} · {user.email}
+                          </p>
+                        </div>
+                        <span>{user.xp} XP</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p style={{ margin: "6px 0 0" }}>
+                    Todavía no hay personas registradas.
+                  </p>
+                )}
+              </div>
+            ) : null}
+            {activePanel === "ranking" ? (
+              <div className="parchment" style={{ marginTop: 12 }}>
+                <strong>Ranking global</strong>
+                {registeredUsers.length > 0 ? (
+                  <div className="ranking-summary">
+                    {registeredUsers.map((user) => (
+                      <div key={user.email} className="ranking-summary__item">
+                        <div>
+                          <strong>
+                            #{user.position} {user.nombre}
+                          </strong>
+                          <p>{user.ranking}</p>
+                        </div>
+                        <span>{user.xp} XP</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p style={{ margin: "6px 0 0" }}>
+                    Todavía no hay ranking disponible.
+                  </p>
+                )}
+              </div>
+            ) : null}
           </div>
           <div className="parchment" style={{ marginTop: 12 }}>
             <strong>Juramento del Explorador</strong>
@@ -112,6 +214,7 @@ export default function ActivityPages({
   onMissionClick,
   onOpenBadges,
   activity0Completed,
+  leaderboard,
   onGainXp,
   teams,
   timer,
@@ -131,6 +234,7 @@ export default function ActivityPages({
           onMissionClick={onMissionClick}
           onOpenBadges={onOpenBadges}
           completed={activity0Completed}
+          leaderboard={leaderboard}
         />
       )}
     </div>

@@ -1,4 +1,4 @@
-const LOCAL_API_URL = "http://localhost:5000";
+const LOCAL_API_URL = "http://localhost:5001";
 const PRODUCTION_API_URL = "https://tfmgamificacionunir.onrender.com";
 
 function resolveApiBaseUrl() {

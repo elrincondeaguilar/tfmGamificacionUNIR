@@ -51,6 +51,13 @@ const SPREADSHEET_ID = process.env.GOOGLE_SHEETS_SPREADSHEET_ID;
 // A: Email, B: Nombre, C: Password(hash), D: Matricula, E: Fecha,
 // F: XP, G: Insignias (csv), H: Ranking, I: Escuadron, J: Héroe
 const USERS_RANGE = "'Hoja 1'!A:J";
+const RANKS = [
+  { name: "Aprendiz", min: 0 },
+  { name: "Explorador", min: 200 },
+  { name: "Cientifico", min: 400 },
+  { name: "Experto", min: 700 },
+  { name: "Maestro Heroe", min: 900 },
+];
 
 // Obtener datos de Google Sheets
 async function getSheetData(range) {
@@ -78,6 +85,12 @@ function ensureGoogleSheetsConfig() {
       "Falta configurar GOOGLE_SERVICE_ACCOUNT_KEY_JSON o GOOGLE_SERVICE_ACCOUNT_KEY",
     );
   }
+}
+
+function getRankName(xp) {
+  return (
+    [...RANKS].reverse().find((rank) => xp >= rank.min)?.name ?? RANKS[0].name
+  );
 }
 
 async function updateSheetRow(rowNumber, values) {
@@ -145,6 +158,33 @@ async function appendToSheet(range, values) {
   }
 }
 
+function parseRankingUsers(rows) {
+  return rows
+    .map(parseUserRow)
+    .filter((user) => user.email.includes("@") && Number.isFinite(user.xp))
+    .map((user) => ({
+      email: user.email,
+      nombre: user.nombre,
+      matricula: user.matricula,
+      xp: user.xp,
+      ranking: getRankName(user.xp),
+      insignias: user.insignias,
+      escuadron: user.escuadron,
+      heroe: user.heroe,
+    }))
+    .sort((left, right) => {
+      if (right.xp !== left.xp) {
+        return right.xp - left.xp;
+      }
+
+      return left.nombre.localeCompare(right.nombre, "es");
+    })
+    .map((user, index) => ({
+      position: index + 1,
+      ...user,
+    }));
+}
+
 // POST /api/auth/register
 router.post("/register", async (req, res) => {
   try {
@@ -171,7 +211,7 @@ router.post("/register", async (req, res) => {
     // Valores por defecto para progreso
     const xp = 0;
     const insignias = "";
-    const ranking = "Aprendiz";
+    const ranking = getRankName(xp);
     const escuadron = "";
 
     // Agregar usuario a Google Sheets (columnas A..J)
@@ -255,7 +295,7 @@ router.post("/login", async (req, res) => {
         heroe: userObj.heroe,
         xp: userObj.xp,
         insignias: userObj.insignias,
-        ranking: userObj.ranking,
+        ranking: getRankName(userObj.xp),
         escuadron: userObj.escuadron,
       },
     });
@@ -273,7 +313,7 @@ router.patch("/progress", verifyToken, async (req, res) => {
     const email = req.user?.email;
     if (!email) return res.status(400).json({ error: "Usuario inválido" });
 
-    const { xp, insignias, ranking, escuadron } = req.body;
+    const { xp, insignias, escuadron } = req.body;
 
     const found = await findUserRowByEmail(email);
     if (!found) return res.status(404).json({ error: "Usuario no encontrado" });
@@ -282,10 +322,10 @@ router.patch("/progress", verifyToken, async (req, res) => {
     const parsed = parseUserRow(row);
 
     const newXp = typeof xp === "number" ? xp : parsed.xp;
+    const newRanking = getRankName(newXp);
     const newInsignias = Array.isArray(insignias)
       ? insignias.join(",")
       : insignias || (parsed.insignias || []).join(",");
-    const newRanking = ranking || parsed.ranking;
     const newEscuadron = escuadron || parsed.escuadron;
 
     const updatedRow = [
@@ -318,6 +358,21 @@ router.patch("/progress", verifyToken, async (req, res) => {
   } catch (error) {
     console.error("Error actualizando progreso:", error);
     res.status(500).json({ error: "Error actualizando progreso" });
+  }
+});
+
+// GET /api/auth/ranking - obtener ranking global de usuarios
+router.get("/ranking", verifyToken, async (req, res) => {
+  try {
+    ensureGoogleSheetsConfig();
+
+    const rows = await getSheetData(USERS_RANGE);
+    const ranking = parseRankingUsers(rows);
+
+    res.json({ ranking });
+  } catch (error) {
+    console.error("Error obteniendo ranking:", error);
+    res.status(500).json({ error: "Error obteniendo ranking" });
   }
 });
 
