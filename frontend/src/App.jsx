@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Header from "./components/Header";
 import Modal from "./components/Modal";
 import ParticlesCanvas from "./components/ParticlesCanvas";
@@ -27,6 +27,40 @@ const modalContent = {
   },
 };
 
+const missionVideoId = "DI-EeJ8emgk";
+
+function loadYouTubeIframeAPI() {
+  if (window.YT?.Player) {
+    return Promise.resolve();
+  }
+
+  return new Promise((resolve, reject) => {
+    const existingScript = document.querySelector("script[data-youtube-iframe-api]");
+    if (existingScript) {
+      const previousReady = window.onYouTubeIframeAPIReady;
+      window.onYouTubeIframeAPIReady = () => {
+        previousReady?.();
+        resolve();
+      };
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = "https://www.youtube.com/iframe_api";
+    script.async = true;
+    script.dataset.youtubeIframeApi = "true";
+    script.onerror = () => reject(new Error("No se pudo cargar la API de YouTube"));
+
+    const previousReady = window.onYouTubeIframeAPIReady;
+    window.onYouTubeIframeAPIReady = () => {
+      previousReady?.();
+      resolve();
+    };
+
+    document.body.appendChild(script);
+  });
+}
+
 function getRankName(xp) {
   return (
     [...gameConfig.ranks].reverse().find((rank) => xp >= rank.min)?.name ??
@@ -50,6 +84,9 @@ export default function App() {
   const [user, setUser] = useState(null);
   const [currentAuthPage, setCurrentAuthPage] = useState("login");
   const [loading, setLoading] = useState(true);
+  const [missionVideoOpen, setMissionVideoOpen] = useState(false);
+  const missionVideoContainerRef = useRef(null);
+  const missionVideoPlayerRef = useRef(null);
 
   const rankName = useMemo(() => getRankName(xp), [xp]);
   const xpPercent = useMemo(
@@ -64,6 +101,20 @@ export default function App() {
     }
 
     setOpenModal(null);
+  }
+
+  function openMissionVideo() {
+    setOpenModal(null);
+    setMissionVideoOpen(true);
+  }
+
+  function closeMissionVideo() {
+    if (missionVideoPlayerRef.current) {
+      missionVideoPlayerRef.current.destroy();
+      missionVideoPlayerRef.current = null;
+    }
+
+    setMissionVideoOpen(false);
   }
 
   // Verificar si hay sesión activa al cargar
@@ -155,6 +206,67 @@ export default function App() {
     return () => window.clearInterval(timerId);
   }, [timerRunning]);
 
+  useEffect(() => {
+    if (!missionVideoOpen || !missionVideoContainerRef.current) {
+      return undefined;
+    }
+
+    let cancelled = false;
+
+    const initializePlayer = async () => {
+      if (missionVideoPlayerRef.current) {
+        missionVideoPlayerRef.current.destroy();
+        missionVideoPlayerRef.current = null;
+      }
+
+      try {
+        await loadYouTubeIframeAPI();
+
+        if (cancelled || !missionVideoContainerRef.current) {
+          return;
+        }
+
+        missionVideoPlayerRef.current = new window.YT.Player(
+          missionVideoContainerRef.current,
+          {
+            videoId: missionVideoId,
+            playerVars: {
+              autoplay: 1,
+              controls: 1,
+              rel: 0,
+              modestbranding: 1,
+              playsinline: 1,
+            },
+            events: {
+              onReady: (event) => {
+                event.target.playVideo();
+              },
+              onStateChange: (event) => {
+                if (event.data === window.YT.PlayerState.ENDED) {
+                  closeMissionVideo();
+                  setOpenModal("modalStart");
+                }
+              },
+            },
+          },
+        );
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    initializePlayer();
+
+    return () => {
+      cancelled = true;
+
+      if (missionVideoPlayerRef.current) {
+        missionVideoPlayerRef.current.destroy();
+        missionVideoPlayerRef.current = null;
+      }
+    };
+  }, [missionVideoOpen]);
+
   if (loading) {
     return (
       <div
@@ -217,7 +329,7 @@ export default function App() {
 
           <ActivityPages
             activePage={activePage}
-            onOpenModal={setOpenModal}
+            onMissionClick={openMissionVideo}
             onGainXp={handleGainXp}
             teams={gameConfig.teams}
             timer={timer}
@@ -233,6 +345,27 @@ export default function App() {
           />
         </main>
       </div>
+
+      <Modal
+        id="missionVideoModal"
+        title="Presentacion de la mision"
+        open={missionVideoOpen}
+        onClose={closeMissionVideo}
+        className="modal-box--video"
+      >
+        <div className="video-modal">
+          <div className="video-modal__frame">
+            <div
+              ref={missionVideoContainerRef}
+              className="video-modal__player"
+              aria-label="Video de YouTube de la mision"
+            />
+          </div>
+          <p className="video-modal__hint">
+            El siguiente modal aparecera automaticamente al terminar el video.
+          </p>
+        </div>
+      </Modal>
 
       <Modal
         id="modalStart"

@@ -1,4 +1,11 @@
-export default function Modal({ id, title, children, open, onClose }) {
+export default function Modal({
+  id,
+  title,
+  children,
+  open,
+  onClose,
+  className = "",
+}) {
   if (!open) {
     return null;
   }
@@ -15,7 +22,7 @@ export default function Modal({ id, title, children, open, onClose }) {
         }
       }}
     >
-      <div className="modal-box glass">
+      <div className={`modal-box glass ${className}`.trim()}>
         <h3 className="title-font">{title}</h3>
         {children}
       </div>

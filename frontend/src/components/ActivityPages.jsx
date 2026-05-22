@@ -17,7 +17,7 @@ function AccordionItem({ title, children }) {
   );
 }
 
-function Activity0({ onOpenModal }) {
+function Activity0({ onMissionClick }) {
   return (
     <section id="act0" className="page active">
       <div className="grid" style={{ gridTemplateColumns: "1.2fr 0.8fr" }}>
@@ -50,7 +50,7 @@ function Activity0({ onOpenModal }) {
           <button
             className="mission-btn"
             style={{ alignSelf: "flex-start" }}
-            onClick={() => onOpenModal("modalStart")}
+            onClick={onMissionClick}
           >
             Iniciar aventura
           </button>
@@ -76,7 +76,7 @@ function Activity0({ onOpenModal }) {
 
 export default function ActivityPages({
   activePage,
-  onOpenModal,
+  onMissionClick,
   onGainXp,
   teams,
   timer,
@@ -89,7 +89,7 @@ export default function ActivityPages({
 }) {
   return (
     <div>
-      <Activity0 onOpenModal={onOpenModal} />
+      <Activity0 onMissionClick={onMissionClick} />
     </div>
   );
 }
