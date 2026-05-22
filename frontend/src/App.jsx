@@ -27,7 +27,33 @@ const modalContent = {
   },
 };
 
-const missionVideoId = "DI-EeJ8emgk";
+const missionVideoId = "USBsHK7C8S0";
+
+const badgeCardModules = import.meta.glob(
+  "./assets/images/*.{jpg,jpeg,png,webp}",
+  {
+    eager: true,
+    import: "default",
+  },
+);
+
+const badgeCards = Object.entries(badgeCardModules)
+  .sort(([left], [right]) => left.localeCompare(right))
+  .map(([path, src], index) => {
+    const fileName = path.split("/").pop() ?? `insignia-${index + 1}`;
+    const baseName = fileName.replace(/\.[^.]+$/, "");
+    const title = baseName
+      .replace(/^Tarjeta_de_/i, "")
+      .replace(/[_-]+/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    return {
+      src,
+      title,
+      alt: `Tarjeta de insignia ${index + 1}`,
+    };
+  });
 
 function loadYouTubeIframeAPI() {
   if (window.YT?.Player) {
@@ -35,7 +61,9 @@ function loadYouTubeIframeAPI() {
   }
 
   return new Promise((resolve, reject) => {
-    const existingScript = document.querySelector("script[data-youtube-iframe-api]");
+    const existingScript = document.querySelector(
+      "script[data-youtube-iframe-api]",
+    );
     if (existingScript) {
       const previousReady = window.onYouTubeIframeAPIReady;
       window.onYouTubeIframeAPIReady = () => {
@@ -49,7 +77,8 @@ function loadYouTubeIframeAPI() {
     script.src = "https://www.youtube.com/iframe_api";
     script.async = true;
     script.dataset.youtubeIframeApi = "true";
-    script.onerror = () => reject(new Error("No se pudo cargar la API de YouTube"));
+    script.onerror = () =>
+      reject(new Error("No se pudo cargar la API de YouTube"));
 
     const previousReady = window.onYouTubeIframeAPIReady;
     window.onYouTubeIframeAPIReady = () => {
@@ -85,6 +114,10 @@ export default function App() {
   const [currentAuthPage, setCurrentAuthPage] = useState("login");
   const [loading, setLoading] = useState(true);
   const [missionVideoOpen, setMissionVideoOpen] = useState(false);
+  const [activity0Completed, setActivity0Completed] = useState(false);
+  const [badgeCarouselOpen, setBadgeCarouselOpen] = useState(false);
+  const [badgeCarouselIndex, setBadgeCarouselIndex] = useState(0);
+  const [badgeCarouselFullscreen, setBadgeCarouselFullscreen] = useState(false);
   const missionVideoContainerRef = useRef(null);
   const missionVideoPlayerRef = useRef(null);
 
@@ -104,6 +137,10 @@ export default function App() {
   }
 
   function openMissionVideo() {
+    if (activity0Completed) {
+      return;
+    }
+
     setOpenModal(null);
     setMissionVideoOpen(true);
   }
@@ -115,6 +152,62 @@ export default function App() {
     }
 
     setMissionVideoOpen(false);
+  }
+
+  function openBadgeCarousel() {
+    if (badgeCards.length === 0) {
+      return;
+    }
+
+    setBadgeCarouselIndex(0);
+    setBadgeCarouselFullscreen(false);
+    setBadgeCarouselOpen(true);
+  }
+
+  function closeBadgeCarousel() {
+    if (document.fullscreenElement?.id === "badgeCarouselModal") {
+      document.exitFullscreen().catch(() => {});
+    }
+
+    setBadgeCarouselOpen(false);
+    setBadgeCarouselFullscreen(false);
+  }
+
+  function toggleBadgeCarouselFullscreen() {
+    const modalElement = document.getElementById("badgeCarouselModal");
+
+    if (!modalElement) {
+      return;
+    }
+
+    if (document.fullscreenElement) {
+      document.exitFullscreen().catch(() => {});
+      return;
+    }
+
+    modalElement.requestFullscreen?.().catch(() => {
+      setBadgeCarouselFullscreen((current) => !current);
+    });
+  }
+
+  function goToPreviousBadge() {
+    setBadgeCarouselIndex((current) => {
+      if (badgeCards.length === 0) {
+        return 0;
+      }
+
+      return (current - 1 + badgeCards.length) % badgeCards.length;
+    });
+  }
+
+  function goToNextBadge() {
+    setBadgeCarouselIndex((current) => {
+      if (badgeCards.length === 0) {
+        return 0;
+      }
+
+      return (current + 1) % badgeCards.length;
+    });
   }
 
   // Verificar si hay sesión activa al cargar
@@ -244,6 +337,8 @@ export default function App() {
               onStateChange: (event) => {
                 if (event.data === window.YT.PlayerState.ENDED) {
                   closeMissionVideo();
+                  setActivity0Completed(true);
+                  setActivePage("act1");
                   setOpenModal("modalStart");
                 }
               },
@@ -266,6 +361,20 @@ export default function App() {
       }
     };
   }, [missionVideoOpen]);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setBadgeCarouselFullscreen(
+        document.fullscreenElement?.id === "badgeCarouselModal",
+      );
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, []);
 
   if (loading) {
     return (
@@ -330,6 +439,8 @@ export default function App() {
           <ActivityPages
             activePage={activePage}
             onMissionClick={openMissionVideo}
+            onOpenBadges={openBadgeCarousel}
+            activity0Completed={activity0Completed}
             onGainXp={handleGainXp}
             teams={gameConfig.teams}
             timer={timer}
@@ -362,9 +473,108 @@ export default function App() {
             />
           </div>
           <p className="video-modal__hint">
-            El siguiente modal aparecera automaticamente al terminar el video.
+            Introducción a la Academia del Héroe
           </p>
         </div>
+      </Modal>
+
+      <Modal
+        id="badgeCarouselModal"
+        title="Tarjetas de insignias"
+        open={badgeCarouselOpen}
+        onClose={closeBadgeCarousel}
+        className={`modal-box--gallery ${
+          badgeCarouselFullscreen ? "modal-box--gallery-fullscreen" : ""
+        }`.trim()}
+        headerActions={
+          badgeCarouselFullscreen ? (
+            <div className="modal-box__actions">
+              <button
+                className="modal-icon-btn"
+                type="button"
+                onClick={toggleBadgeCarouselFullscreen}
+                aria-label="Salir de pantalla completa"
+                title="Salir de pantalla completa"
+              >
+                ↙
+              </button>
+              <button
+                className="modal-icon-btn"
+                type="button"
+                onClick={closeBadgeCarousel}
+                aria-label="Cerrar modal"
+                title="Cerrar"
+              >
+                ×
+              </button>
+            </div>
+          ) : (
+            <div className="modal-box__actions">
+              <button
+                className="modal-icon-btn"
+                type="button"
+                onClick={toggleBadgeCarouselFullscreen}
+                aria-label="Ver en pantalla completa"
+                title="Ver en pantalla completa"
+              >
+                ⛶
+              </button>
+              <button
+                className="modal-icon-btn"
+                type="button"
+                onClick={closeBadgeCarousel}
+                aria-label="Cerrar modal"
+                title="Cerrar"
+              >
+                ×
+              </button>
+            </div>
+          )
+        }
+      >
+        {badgeCards.length > 0 ? (
+          <div
+            className={`badge-carousel ${
+              badgeCarouselFullscreen ? "badge-carousel--fullscreen" : ""
+            }`}
+          >
+            <div className="badge-carousel__viewer">
+              <img
+                className="badge-carousel__image"
+                src={badgeCards[badgeCarouselIndex].src}
+                alt={badgeCards[badgeCarouselIndex].alt}
+              />
+            </div>
+            {!badgeCarouselFullscreen ? (
+              <div className="badge-carousel__meta">
+                <div>
+                  <strong>{badgeCards[badgeCarouselIndex].title}</strong>
+                  <p>
+                    {badgeCarouselIndex + 1} de {badgeCards.length}
+                  </p>
+                </div>
+                <div className="badge-carousel__controls">
+                  <button
+                    className="mission-btn"
+                    type="button"
+                    onClick={goToPreviousBadge}
+                  >
+                    Anterior
+                  </button>
+                  <button
+                    className="mission-btn"
+                    type="button"
+                    onClick={goToNextBadge}
+                  >
+                    Siguiente
+                  </button>
+                </div>
+              </div>
+            ) : null}
+          </div>
+        ) : (
+          <p className="video-modal__hint">No hay tarjetas cargadas todavía.</p>
+        )}
       </Modal>
 
       <Modal

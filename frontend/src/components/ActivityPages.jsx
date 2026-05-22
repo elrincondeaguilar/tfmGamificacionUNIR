@@ -17,7 +17,7 @@ function AccordionItem({ title, children }) {
   );
 }
 
-function Activity0({ onMissionClick }) {
+function Activity0({ onMissionClick, onOpenBadges, completed }) {
   return (
     <section id="act0" className="page active">
       <div className="grid" style={{ gridTemplateColumns: "1.2fr 0.8fr" }}>
@@ -38,7 +38,20 @@ function Activity0({ onMissionClick }) {
             <div className="mini">🧭 Escuadrones</div>
             <div className="mini">📚 Libro de Heroes</div>
             <div className="mini">🥇 Ranking</div>
-            <div className="mini">🎖️ Insignias</div>
+            <div
+              className="mini mini--clickable"
+              role="button"
+              tabIndex={0}
+              onClick={onOpenBadges}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  onOpenBadges();
+                }
+              }}
+            >
+              🎖️ Insignias
+            </div>
           </div>
           <div className="parchment" style={{ marginTop: 12 }}>
             <strong>Juramento del Explorador</strong>
@@ -51,8 +64,9 @@ function Activity0({ onMissionClick }) {
             className="mission-btn"
             style={{ alignSelf: "flex-start" }}
             onClick={onMissionClick}
+            disabled={completed}
           >
-            Iniciar aventura
+            {completed ? "Actividad 0 completada" : "Iniciar aventura"}
           </button>
         </article>
         <aside className="card glass">
@@ -74,9 +88,30 @@ function Activity0({ onMissionClick }) {
   );
 }
 
+function Activity1() {
+  return (
+    <section id="act1" className="page active">
+      <div className="grid" style={{ gridTemplateColumns: "1fr" }}>
+        <article className="card glass mission">
+          <span className="badge">ACTIVIDAD 1 - Proxima mision</span>
+          <h3 className="title-font" style={{ margin: "10px 0" }}>
+            Actividad 0 completada
+          </h3>
+          <p className="story">
+            Ya viste la presentacion inicial. Usa el menu lateral para continuar
+            con la Actividad 1.
+          </p>
+        </article>
+      </div>
+    </section>
+  );
+}
+
 export default function ActivityPages({
   activePage,
   onMissionClick,
+  onOpenBadges,
+  activity0Completed,
   onGainXp,
   teams,
   timer,
@@ -89,7 +124,15 @@ export default function ActivityPages({
 }) {
   return (
     <div>
-      <Activity0 onMissionClick={onMissionClick} />
+      {activePage === "act1" ? (
+        <Activity1 />
+      ) : (
+        <Activity0
+          onMissionClick={onMissionClick}
+          onOpenBadges={onOpenBadges}
+          completed={activity0Completed}
+        />
+      )}
     </div>
   );
 }

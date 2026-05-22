@@ -33,7 +33,7 @@ function AccordionList() {
   );
 }
 
-export function IntroSection({ onMissionClick }) {
+export function IntroSection({ onMissionClick, onOpenBadges }) {
   return (
     <section id="act0" className="page active">
       <div className="grid" style={{ gridTemplateColumns: "1.2fr 0.8fr" }}>
@@ -62,7 +62,20 @@ export function IntroSection({ onMissionClick }) {
             <div className="mini">🧭 Escuadrones</div>
             <div className="mini">📚 Libro de Heroes</div>
             <div className="mini">🥇 Ranking</div>
-            <div className="mini">🎖️ Insignias</div>
+            <div
+              className="mini mini--clickable"
+              role="button"
+              tabIndex={0}
+              onClick={onOpenBadges}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  onOpenBadges();
+                }
+              }}
+            >
+              🎖️ Insignias
+            </div>
           </div> */}
           <div className="parchment" style={{ marginTop: "12px" }}>
             <strong>Juramento del Explorador</strong>

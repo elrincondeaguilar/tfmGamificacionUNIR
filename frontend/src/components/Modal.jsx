@@ -5,6 +5,7 @@ export default function Modal({
   open,
   onClose,
   className = "",
+  headerActions = null,
 }) {
   if (!open) {
     return null;
@@ -23,7 +24,10 @@ export default function Modal({
       }}
     >
       <div className={`modal-box glass ${className}`.trim()}>
-        <h3 className="title-font">{title}</h3>
+        <div className="modal-box__header">
+          <h3 className="title-font">{title}</h3>
+          {headerActions}
+        </div>
         {children}
       </div>
     </div>
