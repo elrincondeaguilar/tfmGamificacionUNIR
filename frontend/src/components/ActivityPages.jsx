@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ChartCanvas from "./ChartCanvas";
+import { gameConfig } from "../data/gameData";
+import { getRankName } from "../utils/gameUtils";
 
 function AccordionItem({ title, children }) {
   const [open, setOpen] = useState(false);
@@ -190,19 +192,133 @@ function Activity0({ onMissionClick, onOpenBadges, completed, leaderboard }) {
   );
 }
 
-function Activity1() {
+function Activity1({ onGainXp, xp }) {
+  const [claimedReward, setClaimedReward] = useState(null);
+  const detectedRank = getRankName(xp, gameConfig);
+  const availableReward =
+    detectedRank === "Aprendiz"
+      ? { level: "Nivel 1", amount: 20 }
+      : detectedRank === "Explorador"
+        ? { level: "Nivel 2", amount: 35 }
+        : { level: "Nivel 3", amount: 50 };
+
+  function handleClaimLevelReward(level, amount) {
+    if (claimedReward) {
+      return;
+    }
+
+    onGainXp(amount);
+    setClaimedReward({
+      level,
+      amount,
+      nextRank: getRankName(xp + amount, gameConfig),
+    });
+  }
+
+  const [geniallyDone, setGeniallyDone] = useState(false);
+
+  useEffect(() => {
+    function onMessage(e) {
+      try {
+        // Accept explicit messages or simple string markers
+        if (
+          (e.origin && e.origin.includes("view.genially.com")) ||
+          e.data === "geniallyComplete" ||
+          (e.data && e.data.type === "geniallyComplete")
+        ) {
+          setGeniallyDone(true);
+        }
+      } catch (err) {
+        // ignore
+      }
+    }
+
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  }, []);
+
   return (
     <section id="act1" className="page active">
       <div className="grid" style={{ gridTemplateColumns: "1fr" }}>
         <article className="card glass mission">
           <span className="badge">ACTIVIDAD 1 - Proxima mision</span>
           <h3 className="title-font" style={{ margin: "10px 0" }}>
-            Actividad 0 completada
+            El misterio del heroe desaparecido sigue sin resolverse, y nuevas
+            pistas te esperan dentro de la Academia.
           </h3>
-          <p className="story">
-            Ya viste la presentacion inicial. Usa el menu lateral para continuar
-            con la Actividad 1.
-          </p>
+          <div style={{ width: "100%", marginTop: 12 }}>
+            <div
+              style={{
+                position: "relative",
+                paddingBottom: "56.25%",
+                paddingTop: 0,
+                height: 0,
+              }}
+            >
+              <iframe
+                title="Bosque Cinematico"
+                frameBorder="0"
+                width="1200"
+                height="675"
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: "100%",
+                }}
+                src="https://view.genially.com/6a10de4990e4c7327bfc37bd"
+                type="text/html"
+                allowScriptAccess="always"
+                allowFullScreen
+                scrolling="yes"
+                allowNetworking="all"
+              />
+            </div>
+          </div>
+          <div className="parchment" style={{ marginTop: 16 }}>
+            <strong>Finalizar actividad y sumar XP</strong>
+            <p style={{ margin: "6px 0 10px" }}>
+              Tu opcion disponible depende del rango detectado automaticamente.
+            </p>
+            <p style={{ margin: "0 0 10px" }}>
+              Nivel detectado automaticamente: <strong>{detectedRank}</strong>
+            </p>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              {/* Show reward button only after Genially signals completion */}
+              {geniallyDone ? (
+                <button
+                  className="mission-btn"
+                  type="button"
+                  disabled={Boolean(claimedReward)}
+                  onClick={() =>
+                    handleClaimLevelReward(
+                      availableReward.level,
+                      availableReward.amount,
+                    )
+                  }
+                >
+                  {availableReward.level} (+{availableReward.amount} XP)
+                </button>
+              ) : (
+                <button
+                  className="mission-btn"
+                  type="button"
+                  onClick={() => setGeniallyDone(true)}
+                  title="Marcar actividad como finalizada manualmente"
+                >
+                  Marcar como completada
+                </button>
+              )}
+            </div>
+            {claimedReward ? (
+              <p style={{ margin: "10px 0 0" }}>
+                Recompensa aplicada por {claimedReward.level} (+
+                {claimedReward.amount} XP). Rango actual:{" "}
+                {claimedReward.nextRank}.
+              </p>
+            ) : null}
+          </div>
         </article>
       </div>
     </section>
@@ -216,6 +332,7 @@ export default function ActivityPages({
   activity0Completed,
   leaderboard,
   onGainXp,
+  xp,
   teams,
   timer,
   onStartTimer,
@@ -228,7 +345,7 @@ export default function ActivityPages({
   return (
     <div>
       {activePage === "act1" ? (
-        <Activity1 />
+        <Activity1 onGainXp={onGainXp} xp={xp} />
       ) : (
         <Activity0
           onMissionClick={onMissionClick}

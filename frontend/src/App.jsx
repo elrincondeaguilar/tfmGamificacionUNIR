@@ -8,6 +8,9 @@ import LoginPage from "./components/LoginPage";
 import RegisterPage from "./components/RegisterPage";
 import { apiUrl } from "./config/api";
 import { gameConfig, initialReflection } from "./data/gameData";
+import { badgeCards, getRankName, formatTimer } from "./utils/gameUtils";
+import useMissionVideo from "./hooks/useMissionVideo";
+import BadgeCarousel from "./components/BadgeCarousel";
 
 const modalContent = {
   modalStart: {
@@ -27,81 +30,7 @@ const modalContent = {
   },
 };
 
-const missionVideoId = "USBsHK7C8S0";
-
-const badgeCardModules = import.meta.glob(
-  "./assets/images/*.{jpg,jpeg,png,webp}",
-  {
-    eager: true,
-    import: "default",
-  },
-);
-
-const badgeCards = Object.entries(badgeCardModules)
-  .sort(([left], [right]) => left.localeCompare(right))
-  .map(([path, src], index) => {
-    const fileName = path.split("/").pop() ?? `insignia-${index + 1}`;
-    const baseName = fileName.replace(/\.[^.]+$/, "");
-    const title = baseName
-      .replace(/^Tarjeta_de_/i, "")
-      .replace(/[_-]+/g, " ")
-      .replace(/\s+/g, " ")
-      .trim();
-
-    return {
-      src,
-      title,
-      alt: `Tarjeta de insignia ${index + 1}`,
-    };
-  });
-
-function loadYouTubeIframeAPI() {
-  if (window.YT?.Player) {
-    return Promise.resolve();
-  }
-
-  return new Promise((resolve, reject) => {
-    const existingScript = document.querySelector(
-      "script[data-youtube-iframe-api]",
-    );
-    if (existingScript) {
-      const previousReady = window.onYouTubeIframeAPIReady;
-      window.onYouTubeIframeAPIReady = () => {
-        previousReady?.();
-        resolve();
-      };
-      return;
-    }
-
-    const script = document.createElement("script");
-    script.src = "https://www.youtube.com/iframe_api";
-    script.async = true;
-    script.dataset.youtubeIframeApi = "true";
-    script.onerror = () =>
-      reject(new Error("No se pudo cargar la API de YouTube"));
-
-    const previousReady = window.onYouTubeIframeAPIReady;
-    window.onYouTubeIframeAPIReady = () => {
-      previousReady?.();
-      resolve();
-    };
-
-    document.body.appendChild(script);
-  });
-}
-
-function getRankName(xp) {
-  return (
-    [...gameConfig.ranks].reverse().find((rank) => xp >= rank.min)?.name ??
-    gameConfig.ranks[0].name
-  );
-}
-
-function formatTimer(seconds) {
-  const minutes = Math.floor(seconds / 60);
-  const rest = String(seconds % 60).padStart(2, "0");
-  return `${String(minutes).padStart(2, "0")}:${rest}`;
-}
+// utilities moved to ./utils/gameUtils.js
 
 export default function App() {
   const [activePage, setActivePage] = useState("act0");
@@ -116,13 +45,12 @@ export default function App() {
   const [missionVideoOpen, setMissionVideoOpen] = useState(false);
   const [activity0Completed, setActivity0Completed] = useState(false);
   const [badgeCarouselOpen, setBadgeCarouselOpen] = useState(false);
-  const [badgeCarouselIndex, setBadgeCarouselIndex] = useState(0);
   const [badgeCarouselFullscreen, setBadgeCarouselFullscreen] = useState(false);
   const [leaderboard, setLeaderboard] = useState([]);
   const missionVideoContainerRef = useRef(null);
   const missionVideoPlayerRef = useRef(null);
 
-  const rankName = useMemo(() => getRankName(xp), [xp]);
+  const rankName = useMemo(() => getRankName(xp, gameConfig), [xp]);
   const xpPercent = useMemo(
     () => Math.min(100, Math.round((xp / gameConfig.maxXP) * 100)),
     [xp],
@@ -160,7 +88,6 @@ export default function App() {
       return;
     }
 
-    setBadgeCarouselIndex(0);
     setBadgeCarouselFullscreen(false);
     setBadgeCarouselOpen(true);
   }
@@ -188,26 +115,6 @@ export default function App() {
 
     modalElement.requestFullscreen?.().catch(() => {
       setBadgeCarouselFullscreen((current) => !current);
-    });
-  }
-
-  function goToPreviousBadge() {
-    setBadgeCarouselIndex((current) => {
-      if (badgeCards.length === 0) {
-        return 0;
-      }
-
-      return (current - 1 + badgeCards.length) % badgeCards.length;
-    });
-  }
-
-  function goToNextBadge() {
-    setBadgeCarouselIndex((current) => {
-      if (badgeCards.length === 0) {
-        return 0;
-      }
-
-      return (current + 1) % badgeCards.length;
     });
   }
 
@@ -346,68 +253,17 @@ export default function App() {
     return () => window.clearInterval(timerId);
   }, [timerRunning]);
 
-  useEffect(() => {
-    if (!missionVideoOpen || !missionVideoContainerRef.current) {
-      return undefined;
-    }
-
-    let cancelled = false;
-
-    const initializePlayer = async () => {
-      if (missionVideoPlayerRef.current) {
-        missionVideoPlayerRef.current.destroy();
-        missionVideoPlayerRef.current = null;
-      }
-
-      try {
-        await loadYouTubeIframeAPI();
-
-        if (cancelled || !missionVideoContainerRef.current) {
-          return;
-        }
-
-        missionVideoPlayerRef.current = new window.YT.Player(
-          missionVideoContainerRef.current,
-          {
-            videoId: missionVideoId,
-            playerVars: {
-              autoplay: 1,
-              controls: 1,
-              rel: 0,
-              modestbranding: 1,
-              playsinline: 1,
-            },
-            events: {
-              onReady: (event) => {
-                event.target.playVideo();
-              },
-              onStateChange: (event) => {
-                if (event.data === window.YT.PlayerState.ENDED) {
-                  closeMissionVideo();
-                  setActivity0Completed(true);
-                  setActivePage("act1");
-                  setOpenModal("modalStart");
-                }
-              },
-            },
-          },
-        );
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    initializePlayer();
-
-    return () => {
-      cancelled = true;
-
-      if (missionVideoPlayerRef.current) {
-        missionVideoPlayerRef.current.destroy();
-        missionVideoPlayerRef.current = null;
-      }
-    };
-  }, [missionVideoOpen]);
+  useMissionVideo(
+    missionVideoOpen,
+    missionVideoContainerRef,
+    missionVideoPlayerRef,
+    () => {
+      closeMissionVideo();
+      setActivity0Completed(true);
+      setActivePage("act1");
+      setOpenModal("modalStart");
+    },
+  );
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -493,6 +349,7 @@ export default function App() {
             activity0Completed={activity0Completed}
             leaderboard={leaderboard}
             onGainXp={handleGainXp}
+            xp={xp}
             teams={gameConfig.teams}
             timer={timer}
             onStartTimer={() => setTimerRunning(true)}
@@ -542,104 +399,13 @@ export default function App() {
         </div>
       </Modal>
 
-      <Modal
-        id="badgeCarouselModal"
-        title="Tarjetas de insignias"
+      <BadgeCarousel
         open={badgeCarouselOpen}
         onClose={closeBadgeCarousel}
-        className={`modal-box--gallery ${
-          badgeCarouselFullscreen ? "modal-box--gallery-fullscreen" : ""
-        }`.trim()}
-        headerActions={
-          badgeCarouselFullscreen ? (
-            <div className="modal-box__actions">
-              <button
-                className="modal-icon-btn"
-                type="button"
-                onClick={toggleBadgeCarouselFullscreen}
-                aria-label="Salir de pantalla completa"
-                title="Salir de pantalla completa"
-              >
-                ↙
-              </button>
-              <button
-                className="modal-icon-btn"
-                type="button"
-                onClick={closeBadgeCarousel}
-                aria-label="Cerrar modal"
-                title="Cerrar"
-              >
-                ×
-              </button>
-            </div>
-          ) : (
-            <div className="modal-box__actions">
-              <button
-                className="modal-icon-btn"
-                type="button"
-                onClick={toggleBadgeCarouselFullscreen}
-                aria-label="Ver en pantalla completa"
-                title="Ver en pantalla completa"
-              >
-                ⛶
-              </button>
-              <button
-                className="modal-icon-btn"
-                type="button"
-                onClick={closeBadgeCarousel}
-                aria-label="Cerrar modal"
-                title="Cerrar"
-              >
-                ×
-              </button>
-            </div>
-          )
-        }
-      >
-        {badgeCards.length > 0 ? (
-          <div
-            className={`badge-carousel ${
-              badgeCarouselFullscreen ? "badge-carousel--fullscreen" : ""
-            }`}
-          >
-            <div className="badge-carousel__viewer">
-              <img
-                className="badge-carousel__image"
-                src={badgeCards[badgeCarouselIndex].src}
-                alt={badgeCards[badgeCarouselIndex].alt}
-              />
-            </div>
-            {!badgeCarouselFullscreen ? (
-              <div className="badge-carousel__meta">
-                <div>
-                  <strong>{badgeCards[badgeCarouselIndex].title}</strong>
-                  <p>
-                    {badgeCarouselIndex + 1} de {badgeCards.length}
-                  </p>
-                </div>
-                <div className="badge-carousel__controls">
-                  <button
-                    className="mission-btn"
-                    type="button"
-                    onClick={goToPreviousBadge}
-                  >
-                    Anterior
-                  </button>
-                  <button
-                    className="mission-btn"
-                    type="button"
-                    onClick={goToNextBadge}
-                  >
-                    Siguiente
-                  </button>
-                </div>
-              </div>
-            ) : null}
-          </div>
-        ) : (
-          <p className="video-modal__hint">No hay tarjetas cargadas todavía.</p>
-        )}
-      </Modal>
+        fullscreen={badgeCarouselFullscreen}
+        toggleFullscreen={toggleBadgeCarouselFullscreen}
+        badgeCards={badgeCards}
+      />
 
       <Modal
         id="modalStart"
