@@ -92,6 +92,12 @@ export default function App() {
     setBadgeCarouselOpen(true);
   }
 
+  function openHeroBook() {
+    setActivePage((currentPage) =>
+      currentPage === "libro" ? "act0" : "libro",
+    );
+  }
+
   function closeBadgeCarousel() {
     if (document.fullscreenElement?.id === "badgeCarouselModal") {
       document.exitFullscreen().catch(() => {});
@@ -346,6 +352,7 @@ export default function App() {
             activePage={activePage}
             onMissionClick={openMissionVideo}
             onOpenBadges={openBadgeCarousel}
+            onOpenHeroBook={openHeroBook}
             activity0Completed={activity0Completed}
             leaderboard={leaderboard}
             onGainXp={handleGainXp}
