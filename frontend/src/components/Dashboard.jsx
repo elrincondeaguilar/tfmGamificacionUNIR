@@ -18,7 +18,7 @@ export default function Dashboard({ xp, earnedBadges }) {
 
   // Filtrar insignias ganadas
   const displayedBadges = badgeCards.filter((badge) =>
-    earnedBadges?.includes(badge.title.toLowerCase().replace(/\s+/g, "_")),
+    earnedBadges?.includes(badge.id),
   );
 
   return (

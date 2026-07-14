@@ -65,10 +65,15 @@ export const badgeCards = Object.entries(badgeCardModules)
       .replace(/[_-]+/g, " ")
       .replace(/\s+/g, " ")
       .trim();
+    const id = baseName
+      .replace(/^Tarjeta_de_/i, "")
+      .toLowerCase()
+      .replace(/\s+/g, "_");
 
     return {
       src,
       title,
+      id,
       alt: `Tarjeta de insignia ${index + 1}`,
     };
   });
