@@ -22,7 +22,8 @@ export function loadYouTubeIframeAPI() {
     script.src = "https://www.youtube.com/iframe_api";
     script.async = true;
     script.dataset.youtubeIframeApi = "true";
-    script.onerror = () => reject(new Error("No se pudo cargar la API de YouTube"));
+    script.onerror = () =>
+      reject(new Error("No se pudo cargar la API de YouTube"));
 
     const previousReady = window.onYouTubeIframeAPIReady;
     window.onYouTubeIframeAPIReady = () => {
@@ -67,6 +68,7 @@ export const badgeCards = Object.entries(badgeCardModules)
       .trim();
     const id = baseName
       .replace(/^Tarjeta_de_/i, "")
+      .replace(/^Insignia_/i, "")
       .toLowerCase()
       .replace(/\s+/g, "_");
 
