@@ -3,6 +3,7 @@ import Header from "./components/Header";
 import Modal from "./components/Modal";
 import ParticlesCanvas from "./components/ParticlesCanvas";
 import ActivityPages from "./components/ActivityPages";
+import Dashboard from "./components/Dashboard";
 import Sidebar from "./components/Sidebar";
 import LoginPage from "./components/LoginPage";
 import RegisterPage from "./components/RegisterPage";
@@ -47,6 +48,7 @@ export default function App() {
   const [badgeCarouselOpen, setBadgeCarouselOpen] = useState(false);
   const [badgeCarouselFullscreen, setBadgeCarouselFullscreen] = useState(false);
   const [leaderboard, setLeaderboard] = useState([]);
+  const [earnedBadges, setEarnedBadges] = useState([]);
   const missionVideoContainerRef = useRef(null);
   const missionVideoPlayerRef = useRef(null);
 
@@ -96,6 +98,16 @@ export default function App() {
     setActivePage((currentPage) =>
       currentPage === "libro" ? "act0" : "libro",
     );
+  }
+
+  function handleEarnBadge(badgeId) {
+    console.log(`Badge earned: ${badgeId}`);
+    setEarnedBadges((current) => {
+      if (!current.includes(badgeId)) {
+        return [...current, badgeId];
+      }
+      return current;
+    });
   }
 
   function closeBadgeCarousel() {
@@ -348,27 +360,31 @@ export default function App() {
             onLogout={handleLogout}
           />
 
-          <ActivityPages
-            activePage={activePage}
-            onMissionClick={openMissionVideo}
-            onOpenBadges={openBadgeCarousel}
-            onOpenHeroBook={openHeroBook}
-            activity0Completed={activity0Completed}
-            leaderboard={leaderboard}
-            onGainXp={handleGainXp}
-            xp={xp}
-            teams={gameConfig.teams}
-            timer={timer}
-            onStartTimer={() => setTimerRunning(true)}
-            onStopTimer={() => setTimerRunning(false)}
-            onResetTimer={() => {
-              setTimerRunning(false);
-              setTimerRemaining(gameConfig.timerSeconds);
-            }}
-            charts={gameConfig.charts}
-            reflections={reflections}
-            onSubmitReflection={handleAddReflection}
-          />
+          {activePage === "dashboard" ? (
+            <Dashboard xp={xp} earnedBadges={earnedBadges} />
+          ) : (
+            <ActivityPages
+              activePage={activePage}
+              onMissionClick={openMissionVideo}
+              onOpenBadges={openBadgeCarousel}
+              onEarnBadge={handleEarnBadge}
+              activity0Completed={activity0Completed}
+              leaderboard={leaderboard}
+              onGainXp={handleGainXp}
+              xp={xp}
+              teams={gameConfig.teams}
+              timer={timer}
+              onStartTimer={() => setTimerRunning(true)}
+              onStopTimer={() => setTimerRunning(false)}
+              onResetTimer={() => {
+                setTimerRunning(false);
+                setTimerRemaining(gameConfig.timerSeconds);
+              }}
+              charts={gameConfig.charts}
+              reflections={reflections}
+              onSubmitReflection={handleAddReflection}
+            />
+          )}
         </main>
       </div>
 

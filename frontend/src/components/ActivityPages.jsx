@@ -20,12 +20,7 @@ function AccordionItem({ title, children }) {
   );
 }
 
-function Activity0({
-  onMissionClick,
-  onOpenBadges,
-  completed,
-  leaderboard,
-}) {
+function Activity0({ onMissionClick, onOpenBadges, completed, leaderboard }) {
   const [activePanel, setActivePanel] = useState(null);
 
   const registeredUsers = leaderboard ?? [];
@@ -332,10 +327,123 @@ function Activity1({ onGainXp, xp }) {
   );
 }
 
+function Activity3({ onGainXp, onEarnBadge, xp }) {
+  const [fileUploaded, setFileUploaded] = useState(false);
+  const [claimedReward, setClaimedReward] = useState(false);
+
+  function handleFileUpload(event) {
+    const file = event.target.files?.[0];
+    if (file) {
+      const validTypes = [
+        "application/pdf",
+        "image/jpeg",
+        "image/png",
+        "image/jpg",
+      ];
+      if (validTypes.includes(file.type)) {
+        setFileUploaded(true);
+      } else {
+        alert("Por favor sube un PDF o una imagen (JPG, PNG)");
+      }
+    }
+  }
+
+  function handleClaimReward() {
+    if (claimedReward) return;
+
+    onGainXp(80);
+    onEarnBadge("mente_de_ingeniero");
+    setClaimedReward(true);
+  }
+
+  return (
+    <section id="act3" className="page active">
+      <div className="grid" style={{ gridTemplateColumns: "1fr" }}>
+        <article className="card glass mission">
+          <span className="badge">ACTIVIDAD 3 - Desafío de Ingeniería</span>
+          <h3 className="title-font" style={{ margin: "10px 0" }}>
+            Demuestra tu pensamiento de ingeniero diseñando una solución
+            innovadora
+          </h3>
+          <div style={{ width: "100%", marginTop: 12 }}>
+            <div
+              style={{
+                position: "relative",
+                paddingBottom: "56.25%",
+                paddingTop: 0,
+                height: 0,
+              }}
+            >
+              <iframe
+                title="Desafío de Ingeniería"
+                frameBorder="0"
+                width="1200"
+                height="675"
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: "100%",
+                }}
+                src="https://view.genially.com/6a56710bcd6c1a917ee86511"
+                type="text/html"
+                allowScriptAccess="always"
+                allowFullScreen
+                scrolling="yes"
+                allowNetworking="all"
+              />
+            </div>
+          </div>
+          <div className="parchment" style={{ marginTop: 16 }}>
+            <strong>Sube tu solución y obtén recompensas</strong>
+            <p style={{ margin: "6px 0 10px" }}>
+              Completa la presentación y sube una foto o PDF de tu solución.
+            </p>
+            <div style={{ marginBottom: 16 }}>
+              <input
+                type="file"
+                accept=".pdf,.jpg,.jpeg,.png"
+                onChange={handleFileUpload}
+                style={{
+                  padding: "10px",
+                  border: "1px solid rgba(255, 255, 255, 0.3)",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                }}
+              />
+              {fileUploaded && (
+                <p style={{ margin: "8px 0 0", color: "#90EE90" }}>
+                  ✓ Archivo cargado correctamente
+                </p>
+              )}
+            </div>
+            {fileUploaded && !claimedReward ? (
+              <button
+                className="mission-btn"
+                type="button"
+                onClick={handleClaimReward}
+              >
+                Reclamar Recompensa (+80 XP + Insignia)
+              </button>
+            ) : claimedReward ? (
+              <p style={{ margin: "10px 0 0", color: "#90EE90" }}>
+                ✓ ¡Felicidades! Has ganado 80 XP y la insignia "Mente de
+                Ingeniero"
+              </p>
+            ) : null}
+          </div>
+        </article>
+      </div>
+    </section>
+  );
+}
+
 export default function ActivityPages({
   activePage,
   onMissionClick,
   onOpenBadges,
+  onEarnBadge,
   activity0Completed,
   leaderboard,
   onGainXp,
@@ -353,6 +461,8 @@ export default function ActivityPages({
     <div>
       {activePage === "act2" ? (
         <Activity2Battle onGainXp={onGainXp} />
+      ) : activePage === "act3" ? (
+        <Activity3 onGainXp={onGainXp} onEarnBadge={onEarnBadge} xp={xp} />
       ) : activePage === "act1" ? (
         <Activity1 onGainXp={onGainXp} xp={xp} />
       ) : (

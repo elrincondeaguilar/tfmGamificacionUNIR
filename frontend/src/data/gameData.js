@@ -11,6 +11,7 @@ export const gameConfig = {
   ],
   maxXP: 1000,
   navigation: [
+    { id: "dashboard", label: "📊 Mi Panel" },
     { id: "act0", label: "⚔️ Actividad 0" },
     { id: "act1", label: "🌲 Actividad 1" },
     { id: "act2", label: "🏁 Actividad 2" },
