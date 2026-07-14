@@ -12,7 +12,6 @@ export const gameConfig = {
   maxXP: 1000,
   navigation: [
     { id: "act0", label: "⚔️ Actividad 0" },
-    { id: "libro", label: "📘 Libro de Héroes" },
     { id: "act1", label: "🌲 Actividad 1" },
     { id: "act2", label: "🏁 Actividad 2" },
     { id: "act3", label: "🛠️ Actividad 3" },
