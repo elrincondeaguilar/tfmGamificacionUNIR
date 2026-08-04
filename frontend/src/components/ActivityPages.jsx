@@ -413,7 +413,7 @@ function ErrorFertilFicha({ onGainXp, onEarnBadge }) {
   }
 
   return (
-    <article className="card glass mission" style={{ marginTop: 16 }}>
+    <article className="card glass" style={{ marginTop: 16 }}>
       <span className="badge">MECANISMO TRANSVERSAL - El Error Fertil</span>
       <h3 className="title-font" style={{ margin: "10px 0" }}>
         Convierte tu error en evidencia de aprendizaje
@@ -777,7 +777,7 @@ function TorneoFinal({ xp, onGainXp, onEarnBadge }) {
   return (
     <section id="act5" className="page active">
       <div className="grid" style={{ gridTemplateColumns: "1fr" }}>
-        <article className="card glass mission">
+        <article className="card glass">
           <span className="badge">ACTIVIDAD 5 - Torneo Final</span>
           <h3 className="title-font" style={{ margin: "10px 0" }}>
             La Gran Prueba del Heroe
@@ -791,7 +791,7 @@ function TorneoFinal({ xp, onGainXp, onEarnBadge }) {
           </p>
         </article>
 
-        <article className="card glass mission" style={{ marginTop: 16 }}>
+        <article className="card glass" style={{ marginTop: 16 }}>
           <span className="badge">
             RONDA 1 - Preguntas conceptuales (individual, 15 min)
           </span>
@@ -851,7 +851,7 @@ function TorneoFinal({ xp, onGainXp, onEarnBadge }) {
           </form>
         </article>
 
-        <article className="card glass mission" style={{ marginTop: 16 }}>
+        <article className="card glass" style={{ marginTop: 16 }}>
           <span className="badge">
             RONDA 2 - Problema cooperativo por escuadrones (25 min)
           </span>
@@ -924,7 +924,7 @@ function TorneoFinal({ xp, onGainXp, onEarnBadge }) {
           </form>
         </article>
 
-        <article className="card glass mission" style={{ marginTop: 16 }}>
+        <article className="card glass" style={{ marginTop: 16 }}>
           <span className="badge">
             RONDA 3 - Aplicacion epica (presentacion oral, 5 min por equipo)
           </span>
@@ -1012,7 +1012,7 @@ function TorneoFinal({ xp, onGainXp, onEarnBadge }) {
         </article>
 
         {torneoCompleto ? (
-          <article className="card glass mission" style={{ marginTop: 16 }}>
+          <article className="card glass" style={{ marginTop: 16 }}>
             <span className="badge">CEREMONIA - Cierre del proyecto</span>
             <h3 className="title-font" style={{ margin: "10px 0" }}>
               Ceremonia del Maestro Heroe
